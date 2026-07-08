@@ -5,9 +5,10 @@ import { siteConfig } from "@/lib/site";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/projects", label: "Projects" },
   { href: "/blog", label: "Blog" },
+  { href: "/topics", label: "Topics" },
+  { href: "/series", label: "Series" },
+  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 

@@ -1,106 +1,82 @@
-# Professional Portfolio Blog
+# Thuyên Trần Blog
 
-Website ca nhan/portfolio/blog xay dung bang Next.js App Router, TypeScript va Tailwind CSS. Du an uu tien cau truc sach, SEO co ban, dark mode, performance va kha nang mo rong cho blog MDX, projects va Cloudflare R2 sau nay.
+Blog chia sẻ kiến thức về lập trình web, Next.js, frontend, deployment, Cloudflare R2, Vercel, GitHub và hành trình tự xây sản phẩm cá nhân. Dự án dùng Next.js App Router, TypeScript và Tailwind CSS, deploy trên Vercel.
 
-## Tinh nang
+## Tính Năng
 
-- App Router voi cac route `/`, `/about`, `/projects`, `/blog`, `/contact`.
-- Layout dung chung: Header, Footer, main content, Container va Section.
-- Homepage gom Hero, About preview, Skills, Featured projects, Latest posts va Contact CTA.
-- Dark mode bang Tailwind class strategy va localStorage.
-- Metadata SEO rieng cho tung trang, Open Graph co ban, `robots.txt` va `sitemap.xml`.
-- Blog preview/list dùng dữ liệu tĩnh trong `lib/posts.ts`, sẵn sàng nâng cấp sang MDX sau này.
-- Projects dung du lieu tinh trong `lib/projects.ts`.
-- TypeScript strict, component tach theo `layout`, `sections`, `ui`.
-- San sang deploy len Vercel, khong commit secret.
+- Trang chủ tập trung vào bài viết mới, topics, series và giới thiệu tác giả ngắn.
+- Blog có danh sách bài viết, trang chi tiết bài viết, cover image, tags, topic, reading time và related posts.
+- Topics: `/topics` và `/topics/[slug]`.
+- Series: `/series` và `/series/[slug]`.
+- Cloudflare R2 asset registry qua `lib/r2.ts` và `lib/assets.ts`.
+- SEO metadata cho Home, Blog, Topics, Series, About, Contact và bài viết.
+- Dark mode, responsive, typography tối giản, dễ đọc.
 
-## Cai dat local
+## Cài Đặt Local
 
 ```bash
 npm install
 npm run dev
 ```
 
-Mo `http://localhost:3000` de xem website.
+Mở `http://localhost:3000`.
 
-## Build va kiem tra
+## Kiểm Tra
 
 ```bash
 npm run typecheck
 npm run lint
 npm run build
-npm run start
 ```
 
-## Cau truc du an
+## Cấu Trúc Chính
 
 ```txt
 app/
-  about/
   blog/
-  contact/
-  projects/
+  topics/
+  series/
 components/
   layout/
   sections/
   ui/
-content/
-  blog/
 lib/
-public/
+  posts.ts
+  topics.ts
+  series.ts
+  assets.ts
+  r2.ts
 types/
 ```
 
-## Viết blog
+## Quản Lý Nội Dung
 
-Hiện tại danh sách bài viết được quản lý trong `lib/posts.ts`:
+- Bài viết mẫu nằm trong `lib/posts.ts`.
+- Topics nằm trong `lib/topics.ts`.
+- Series nằm trong `lib/series.ts`.
+- `content/blog` được giữ để sau này chuyển sang Markdown/MDX.
 
-```ts
-{
-  title: "Tieu de bai viet",
-  description: "Mo ta ngan cho SEO va danh sach bai viet",
-  date: "2026-07-09",
-  tags: ["Next.js"],
-  slug: "tieu-de-bai-viet",
-  published: true,
-  content: "Noi dung ngan..."
-}
-```
+## Cloudflare R2 Assets
 
-Thư mục `content/blog` được giữ lại để nâng cấp sang Markdown/MDX ở giai đoạn sau.
-
-## Projects
-
-Cap nhat danh sach du an trong `lib/projects.ts`. Type du an nam trong `types/project.ts`.
-
-Khong dua file media lon vao repository. Khi can anh, video hoac file downloadable, hay dung CDN/object storage va chi luu URL cong khai trong du lieu.
-
-## Cloudflare R2
-
-Du an da co `.env.example` cho domain public va R2:
+Tạo `.env.local` từ `.env.example`:
 
 ```bash
-NEXT_PUBLIC_SITE_URL=
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+NEXT_PUBLIC_R2_PUBLIC_URL=https://your-r2-public-url.r2.dev
 R2_ACCOUNT_ID=
 R2_ACCESS_KEY_ID=
 R2_SECRET_ACCESS_KEY=
 R2_BUCKET_NAME=
-R2_PUBLIC_URL=
 ```
 
-Khi tich hop R2, sao chep `.env.example` thanh `.env.local` va dien gia tri thuc te. Khong commit `.env.local` hoac bat ky secret nao len repository. Tren Vercel, cau hinh cac bien nay trong Project Settings.
+`NEXT_PUBLIC_R2_PUBLIC_URL` là public. Các biến `R2_*` còn lại là server-only, chưa dùng ở client và không được expose qua API public.
 
-## Deploy len Vercel
+Không commit `.env.local`.
 
-1. Push project len GitHub/GitLab/Bitbucket.
-2. Import repository trong Vercel.
-3. Chon framework preset `Next.js`.
-4. Kiem tra build command la `npm run build`.
-5. Them environment variables neu can tich hop R2.
-6. Deploy.
+## Deploy Vercel
 
-## Ghi chu mo rong
-
-- Dat `NEXT_PUBLIC_SITE_URL` tren Vercel thanh domain production de sitemap va canonical URL dung.
-- Co the nang blog Markdown len MDX khi can component trong bai viet.
-- Co the them `lib/r2` khi bat dau upload/list media tu Cloudflare R2.
+1. Push code lên GitHub.
+2. Import project trong Vercel.
+3. Thêm `NEXT_PUBLIC_SITE_URL` và `NEXT_PUBLIC_R2_PUBLIC_URL`.
+4. Build command: `npm run build`.
+5. Redeploy khi đổi domain R2 để `next/image` nhận đúng hostname.

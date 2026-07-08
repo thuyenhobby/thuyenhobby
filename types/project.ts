@@ -6,5 +6,6 @@ export type Project = {
   status: "Planning" | "In Progress" | "Live" | "Maintained";
   demoUrl?: string;
   githubUrl?: string;
+  image?: string;
   featured?: boolean;
 };

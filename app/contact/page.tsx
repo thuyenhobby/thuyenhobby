@@ -6,9 +6,9 @@ import { createPageMetadata } from "@/lib/metadata";
 import { siteConfig } from "@/lib/site";
 
 export const metadata = createPageMetadata({
-  title: "Contact - Thuyên Trần",
+  title: "Contact",
   description:
-    "Liên hệ Thuyên Trần để trao đổi về frontend development, portfolio, blog cá nhân hoặc dự án web nhỏ.",
+    "Liên hệ Thuyên Trần để góp ý bài viết, trao đổi về web development hoặc kết nối học tập.",
   path: "/contact",
 });
 
@@ -23,12 +23,11 @@ export default function ContactPage() {
     <Section>
       <Container className="max-w-2xl">
         <p className="text-sm font-semibold text-accent">Contact</p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight">
-          Hãy bắt đầu một cuộc trò chuyện rõ ràng.
-        </h1>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight">Góp ý, trao đổi hoặc kết nối.</h1>
         <p className="mt-5 leading-8 text-muted">
-          Nếu bạn muốn trao đổi về website cá nhân, frontend development, blog hoặc một ý tưởng web
-          cần triển khai gọn gàng, bạn có thể liên hệ với tôi qua email hoặc các kênh social bên dưới.
+          Nếu bạn có góp ý cho bài viết, muốn trao đổi về Next.js, deployment, Cloudflare R2 hoặc
+          chỉ đơn giản là muốn kết nối trong hành trình học web, bạn có thể liên hệ qua email hoặc
+          các kênh bên dưới.
         </p>
         <Card className="mt-8">
           <p className="text-sm font-semibold text-foreground">Email</p>
@@ -49,11 +48,8 @@ export default function ContactPage() {
             ))}
           </div>
         </Card>
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8">
           <ButtonLink href={`mailto:${siteConfig.email}`}>Gửi email</ButtonLink>
-          <ButtonLink href="/projects" variant="secondary">
-            Xem dự án trước
-          </ButtonLink>
         </div>
       </Container>
     </Section>

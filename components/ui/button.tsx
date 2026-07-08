@@ -13,7 +13,7 @@ type ButtonLinkProps = {
   href: string;
   variant?: "primary" | "secondary" | "ghost";
   className?: string;
-};
+} & Omit<ComponentPropsWithoutRef<"a">, "href" | "className">;
 
 const buttonVariants = {
   primary: "bg-foreground text-background hover:opacity-90",
@@ -32,14 +32,15 @@ export function Button({ children, variant = "primary", className, ...props }: B
   );
 }
 
-export function ButtonLink({ children, href, variant = "primary", className }: ButtonLinkProps) {
+export function ButtonLink({ children, href, variant = "primary", className, ...props }: ButtonLinkProps) {
   if (href.startsWith("http") || href.startsWith("mailto:")) {
     return (
       <a
         href={href}
         className={cn(baseClassName, buttonVariants[variant], className)}
-        target={href.startsWith("http") ? "_blank" : undefined}
-        rel={href.startsWith("http") ? "noreferrer" : undefined}
+        target={props.target ?? (href.startsWith("http") ? "_blank" : undefined)}
+        rel={props.rel ?? (href.startsWith("http") ? "noreferrer" : undefined)}
+        {...props}
       >
         {children}
       </a>
@@ -47,7 +48,7 @@ export function ButtonLink({ children, href, variant = "primary", className }: B
   }
 
   return (
-    <Link href={href} className={cn(baseClassName, buttonVariants[variant], className)}>
+    <Link href={href} className={cn(baseClassName, buttonVariants[variant], className)} {...props}>
       {children}
     </Link>
   );

@@ -1,3 +1,4 @@
+import { assets } from "@/lib/assets";
 import type { Project } from "@/types/project";
 
 export const projects: Project[] = [
@@ -11,6 +12,7 @@ export const projects: Project[] = [
     featured: true,
     demoUrl: "/",
     githubUrl: "https://github.com/",
+    image: assets.projects.personalWebsite,
   },
   {
     slug: "blog-platform",
@@ -22,6 +24,7 @@ export const projects: Project[] = [
     featured: true,
     demoUrl: "/blog",
     githubUrl: "https://github.com/",
+    image: assets.projects.blogPlatform,
   },
   {
     slug: "cloud-storage-gallery",
@@ -32,5 +35,6 @@ export const projects: Project[] = [
     status: "Planning",
     featured: true,
     githubUrl: "https://github.com/",
+    image: assets.projects.r2Gallery,
   },
 ];

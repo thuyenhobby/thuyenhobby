@@ -1,8 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/blog";
+import { getAllSeries } from "@/lib/series";
 import { siteConfig } from "@/lib/site";
+import { getAllTopics } from "@/lib/topics";
 
-const staticRoutes = ["", "/about", "/projects", "/blog", "/contact"];
+const staticRoutes = ["", "/about", "/blog", "/topics", "/series", "/contact"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -20,5 +22,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticUrls, ...blogUrls];
+  const topicUrls = getAllTopics().map((topic) => ({
+    url: `${siteConfig.url}/topics/${topic.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  const seriesUrls = getAllSeries().map((series) => ({
+    url: `${siteConfig.url}/series/${series.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  return [...staticUrls, ...blogUrls, ...topicUrls, ...seriesUrls];
 }

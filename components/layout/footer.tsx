@@ -14,7 +14,8 @@ export function Footer() {
         <div>
           <p className="font-semibold text-foreground">{siteConfig.name}</p>
           <p className="mt-2 max-w-xl leading-6">
-            Portfolio va blog ca nhan ve web development, product thinking va performance.
+            Blog ghi chép về lập trình web, Next.js, deployment, công cụ làm việc và hành trình tự
+            xây sản phẩm cá nhân.
           </p>
           <p className="mt-4">&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
         </div>
