@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-background: 248 250 252;
+  --color-foreground: 15 23 42;
+  --color-muted: 71 85 105;
+  --color-border: 226 232 240;
+  --color-accent: 37 99 235;
+}
+
+.dark {
+  --color-background: 2 6 23;
+  --color-foreground: 241 245 249;
+  --color-muted: 148 163 184;
+  --color-border: 30 41 59;
+  --color-accent: 96 165 250;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+::selection {
+  background: rgb(var(--color-accent) / 0.22);
+}
+
+@layer components {
+  .focus-ring {
+    @apply outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-accent;
+  }
+}
