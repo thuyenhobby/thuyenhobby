@@ -23,7 +23,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="focus-ring inline-flex h-10 items-center rounded-full border border-border px-3 text-sm font-semibold transition hover:border-accent hover:text-accent"
+      className="focus-ring inline-flex h-10 shrink-0 items-center rounded-full border border-border px-3 text-sm font-semibold transition hover:border-accent hover:text-accent"
       aria-label="Toggle dark mode"
     >
       {theme === "dark" ? "Light" : "Dark"}

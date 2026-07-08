@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     locale: "vi_VN",
     type: "website",
   },
+  alternates: {
+    canonical: "/",
+  },
   robots: {
     index: true,
     follow: true,

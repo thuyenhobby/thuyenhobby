@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { siteConfig } from "@/lib/site";
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
@@ -24,9 +25,15 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title: post.title,
     description: post.description,
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.description,
+      url: `${siteConfig.url}/blog/${post.slug}`,
+      siteName: siteConfig.name,
+      locale: "vi_VN",
       type: "article",
       publishedTime: post.date,
     },

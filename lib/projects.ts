@@ -1,37 +1,36 @@
-export type Project = {
-  slug: string;
-  title: string;
-  description: string;
-  year: string;
-  tags: string[];
-  featured?: boolean;
-  url?: string;
-};
+import type { Project } from "@/types/project";
 
 export const projects: Project[] = [
   {
-    slug: "portfolio-nextjs",
-    title: "Portfolio Next.js",
-    description: "Website ca nhan toi uu SEO, dark mode va content Markdown de mo rong dai han.",
-    year: "2026",
-    tags: ["Next.js", "TypeScript", "Tailwind"],
+    slug: "personal-portfolio-website",
+    title: "Personal Portfolio Website",
+    description:
+      "Website cá nhân của Thuyên Trần, được xây dựng bằng Next.js App Router để giới thiệu năng lực, dự án và bài viết kỹ thuật.",
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "SEO"],
+    status: "Live",
     featured: true,
-    url: "/projects",
+    demoUrl: "/",
+    githubUrl: "https://github.com/",
   },
   {
-    slug: "analytics-dashboard",
-    title: "Analytics Dashboard",
-    description: "Dashboard responsive cho product metrics voi UI gon, ro trang thai va de doc tren mobile.",
-    year: "2025",
-    tags: ["React", "Charts", "UX"],
+    slug: "blog-platform",
+    title: "Blog Platform",
+    description:
+      "Nền tảng blog tối giản, tập trung vào trải nghiệm đọc, cấu trúc nội dung sạch và khả năng nâng cấp sang MDX.",
+    technologies: ["Next.js", "Markdown", "MDX Ready", "Content Design"],
+    status: "In Progress",
     featured: true,
+    demoUrl: "/blog",
+    githubUrl: "https://github.com/",
   },
   {
-    slug: "content-platform",
-    title: "Content Platform",
-    description: "Nen tang noi dung tinh nhe, cache tot va san sang ket noi object storage nhu Cloudflare R2.",
-    year: "2025",
-    tags: ["SEO", "R2", "CMS"],
+    slug: "cloud-storage-gallery",
+    title: "Cloud Storage Gallery",
+    description:
+      "Ý tưởng thư viện media dùng Cloudflare R2 để lưu trữ ảnh/file nhẹ, phù hợp cho portfolio và nội dung blog.",
+    technologies: ["Cloudflare R2", "Next.js", "Object Storage", "Image Delivery"],
+    status: "Planning",
     featured: true,
+    githubUrl: "https://github.com/",
   },
 ];
