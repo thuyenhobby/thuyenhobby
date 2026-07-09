@@ -2,9 +2,11 @@ import { Container } from "@/components/layout/container";
 import { siteConfig } from "@/lib/site";
 
 const socialLinks = [
+  { href: "/", label: "Room" },
+  { href: "/resources", label: "Rương đồ" },
+  { href: "/bookshelf", label: "Giá sách" },
+  { href: "/tools", label: "Công cụ" },
   { href: "https://github.com/", label: "GitHub" },
-  { href: "https://www.linkedin.com/", label: "LinkedIn" },
-  { href: "mailto:hello@example.com", label: "Email" },
 ];
 
 export function Footer() {
@@ -14,8 +16,7 @@ export function Footer() {
         <div>
           <p className="font-semibold text-foreground">{siteConfig.name}</p>
           <p className="mt-2 max-w-xl leading-6">
-            Blog ghi chép về lập trình web, Next.js, deployment, công cụ làm việc và hành trình tự
-            xây sản phẩm cá nhân.
+            Built as a personal digital room.
           </p>
           <p className="mt-4">&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
         </div>
@@ -26,7 +27,7 @@ export function Footer() {
               href={link.href}
               className="focus-ring rounded-md font-medium transition hover:text-accent"
               target={link.href.startsWith("http") ? "_blank" : undefined}
-              rel={link.href.startsWith("http") ? "noreferrer" : undefined}
+              rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
             >
               {link.label}
             </a>

@@ -1,12 +1,10 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts } from "@/lib/blog";
-import { getAllSeries } from "@/lib/series";
+import { getBookshelfPostsForPublicPage } from "@/lib/bookshelf-r2";
 import { siteConfig } from "@/lib/site";
-import { getAllTopics } from "@/lib/topics";
 
-const staticRoutes = ["", "/about", "/blog", "/topics", "/series", "/contact"];
+const staticRoutes = ["", "/resources", "/bookshelf", "/tools", "/about"];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticUrls = staticRoutes.map((route) => ({
     url: `${siteConfig.url}${route}`,
@@ -15,26 +13,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === "" ? 1 : 0.8,
   }));
 
-  const blogUrls = getAllPosts().map((post) => ({
-    url: `${siteConfig.url}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
-
-  const topicUrls = getAllTopics().map((topic) => ({
-    url: `${siteConfig.url}/topics/${topic.slug}`,
-    lastModified: now,
+  const bookshelfPosts = await getBookshelfPostsForPublicPage();
+  const bookshelfUrls = bookshelfPosts.map((post) => ({
+    url: `${siteConfig.url}/bookshelf/${post.slug}`,
+    lastModified: new Date(post.updatedAt ?? post.date),
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));
 
-  const seriesUrls = getAllSeries().map((series) => ({
-    url: `${siteConfig.url}/series/${series.slug}`,
-    lastModified: now,
-    changeFrequency: "monthly" as const,
-    priority: 0.6,
-  }));
-
-  return [...staticUrls, ...blogUrls, ...topicUrls, ...seriesUrls];
+  return [...staticUrls, ...bookshelfUrls];
 }

@@ -1,11 +1,11 @@
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
 
 export const siteConfig = {
-  name: "Thuyên Trần",
+  name: "Thuyên Hobby",
   description:
-    "Blog chia sẻ về lập trình web, Next.js, frontend, deployment, Cloudflare R2, Vercel, GitHub và hành trình xây dựng sản phẩm cá nhân.",
+    "Căn phòng số cá nhân của Thuyên, nơi lưu tài nguyên, chia sẻ bài viết và xây dựng các công cụ nhỏ cho niềm yêu thích công nghệ.",
   url: siteUrl,
   author: "Thuyên Trần",
-  role: "Web Developer viết về hành trình học và xây sản phẩm web",
+  role: "Personal Digital Room",
   email: "hello@example.com",
 };

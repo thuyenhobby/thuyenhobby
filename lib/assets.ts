@@ -1,7 +1,13 @@
 import { getR2PublicUrl } from "@/lib/r2";
 
 export const assets = {
+  roomHero: getR2PublicUrl("room/hero.jpg"),
+  chestCover: getR2PublicUrl("room/chest-cover.jpg"),
+  bookshelfCover: getR2PublicUrl("room/bookshelf-cover.jpg"),
+  toolsCover: getR2PublicUrl("room/tools-cover.jpg"),
   avatar: getR2PublicUrl("avatar/thuyen-tran.jpg"),
+  deskImage: getR2PublicUrl("room/desk.jpg"),
+  labImage: getR2PublicUrl("room/lab.jpg"),
   cv: getR2PublicUrl("cv/thuyen-tran-cv.pdf"),
   projects: {
     personalWebsite: getR2PublicUrl("projects/personal-website-cover.jpg"),

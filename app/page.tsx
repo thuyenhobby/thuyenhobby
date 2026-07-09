@@ -1,33 +1,50 @@
-import { Container } from "@/components/layout/container";
-import { AuthorNoteSection } from "@/components/sections/author-note-section";
-import { BlogHero } from "@/components/sections/blog-hero";
-import { FeaturedPosts } from "@/components/sections/featured-posts";
-import { SeriesSection } from "@/components/sections/series-section";
-import { TopicsSection } from "@/components/sections/topics-section";
+import { RoomScene } from "@/components/room/room-scene";
+import { RoomZoneGrid } from "@/components/room/room-zone-grid";
+import { PageShell } from "@/components/ui/page-shell";
+import { Tag } from "@/components/ui/tag";
 import { createPageMetadata } from "@/lib/metadata";
-import { getPublishedPosts } from "@/lib/posts";
-import { getAllSeries } from "@/lib/series";
-import { getAllTopics } from "@/lib/topics";
+import { roomZones } from "@/lib/room";
 
 export const metadata = createPageMetadata({
-  title: "Blog học web của Thuyên Trần",
-  description:
-    "Blog chia sẻ kiến thức về Next.js, frontend, deployment, Cloudflare R2, Vercel, GitHub và hành trình xây dựng sản phẩm web cá nhân.",
+  title: "Thuyên Hobby",
+  description: "Không gian số để lưu tài nguyên, chia sẻ ghi chép và xây công cụ nhỏ.",
   path: "/",
 });
 
-export default function HomePage() {
-  const latestPosts = getPublishedPosts().slice(0, 3);
-  const topics = getAllTopics().filter((topic) => (topic.count ?? 0) > 0).slice(0, 6);
-  const series = getAllSeries();
+const currentHighlights = [
+  "Đang sắp xếp tài nguyên học web.",
+  "Đang viết lại ghi chép ngắn.",
+  "Đang thử vài utility nhỏ.",
+];
 
+export default function HomePage() {
   return (
-    <Container>
-      <BlogHero />
-      <FeaturedPosts posts={latestPosts} />
-      <TopicsSection topics={topics} />
-      <SeriesSection series={series} />
-      <AuthorNoteSection />
-    </Container>
+    <PageShell>
+      <p className="mb-5 font-mono text-sm font-bold uppercase tracking-[0.22em] text-cyan-700 dark:text-cyan-300">
+        Thuyên Hobby - một căn phòng nhỏ cho tài nguyên, ghi chép và công cụ.
+      </p>
+
+      <RoomScene zones={roomZones} />
+
+      <section className="mt-8" aria-labelledby="quick-access-title">
+        <h2 id="quick-access-title" className="mb-4 text-lg font-semibold tracking-tight">
+          Mở nhanh
+        </h2>
+        <RoomZoneGrid zones={roomZones} />
+      </section>
+
+      <section className="mt-8" aria-label="Hiện tại">
+        <div className="rounded-3xl border border-border bg-background p-4 shadow-soft">
+          <div className="grid gap-3 text-sm md:grid-cols-3">
+            {currentHighlights.map((item) => (
+              <div key={item} className="flex items-center gap-3 rounded-2xl bg-foreground/[0.03] px-4 py-3">
+                <Tag className="bg-cyan-500/10 text-cyan-700 dark:text-cyan-300">Hiện tại</Tag>
+                <span className="text-muted">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </PageShell>
   );
 }
