@@ -4,6 +4,10 @@ import { getR2PublicUrl, objectExists } from "@/lib/r2-server";
 
 export const runtime = "nodejs";
 
+function isAllowedUploadKey(key: string) {
+  return /^uploads\/(?:images|files)\/\d{4}\/\d{2}\/[^/]+$/.test(key) || /^bookshelf\/posts\/[a-z0-9]+(?:-[a-z0-9]+)*\/attachments\/[^/]+$/.test(key);
+}
+
 export async function POST(request: NextRequest) {
   const unauthorized = assertAdminRequest(request);
   if (unauthorized) return unauthorized;
@@ -12,7 +16,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as { key?: string };
     const key = body.key?.trim();
 
-    if (!key || key.includes("..") || key.startsWith("/")) {
+    if (!key || key.includes("..") || key.startsWith("/") || !isAllowedUploadKey(key)) {
       return Response.json({ error: "Invalid upload key." }, { status: 400 });
     }
 

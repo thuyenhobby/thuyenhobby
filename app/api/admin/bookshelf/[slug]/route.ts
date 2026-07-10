@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import type { NextRequest } from "next/server";
 import { assertAdminRequest } from "@/lib/admin-auth";
-import { deleteBookshelfPost, getAdminBookshelfPostBySlug, updateBookshelfPost } from "@/lib/bookshelf-r2";
+import { deleteBookshelfPost, getAdminBookshelfPostBySlug, publishBookshelfPost, unpublishBookshelfPost, updateBookshelfPost } from "@/lib/bookshelf-r2";
 import type { BookshelfPostInput } from "@/types/bookshelf";
 
 export const runtime = "nodejs";
@@ -64,6 +64,30 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     return Response.json({ post });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "Failed to update bookshelf post." }, { status: 400 });
+  }
+}
+
+export async function PATCH(request: NextRequest, context: RouteContext) {
+  const unauthorized = assertAdminRequest(request);
+  if (unauthorized) return unauthorized;
+
+  try {
+    const { slug } = await context.params;
+    const body = (await request.json()) as { action?: unknown };
+    const action = String(body.action ?? "");
+
+    if (action !== "publish" && action !== "unpublish") {
+      return Response.json({ error: "Invalid bookshelf action." }, { status: 400 });
+    }
+
+    const post = action === "publish" ? await publishBookshelfPost(slug) : await unpublishBookshelfPost(slug);
+
+    revalidatePath("/bookshelf");
+    revalidatePath(`/bookshelf/${slug}`);
+
+    return Response.json({ post });
+  } catch (error) {
+    return Response.json({ error: error instanceof Error ? error.message : "Failed to update bookshelf status." }, { status: 400 });
   }
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { BookshelfPost, BookshelfPostInput, BookshelfPostMetadata } from "@/types/bookshelf";
 
 const emptyInput: BookshelfPostInput = {
@@ -11,8 +11,19 @@ const emptyInput: BookshelfPostInput = {
   tags: [],
   content: "",
   coverImage: "",
-  published: false,
+  published: true,
   featured: false,
+};
+
+type PresignedUpload = {
+  uploadUrl: string;
+  key: string;
+  publicUrl: string;
+};
+
+type UploadAssetOptions = {
+  scope?: "bookshelf-post";
+  slug?: string;
 };
 
 function slugify(value: string) {
@@ -32,6 +43,20 @@ function headers(secret: string) {
   };
 }
 
+function isImageFile(file: File) {
+  return file.type.startsWith("image/");
+}
+
+function markdownForUpload(file: File, key: string) {
+  const label = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() || file.name;
+
+  if (isImageFile(file)) {
+    return `![${label}](${key})`;
+  }
+
+  return `[${file.name}](${key})`;
+}
+
 export function AdminBookshelfClient() {
   const [secret, setSecret] = useState("");
   const [posts, setPosts] = useState<BookshelfPostMetadata[]>([]);
@@ -40,8 +65,10 @@ export function AdminBookshelfClient() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
 
   const selectedPost = useMemo(() => posts.find((post) => post.slug === selectedSlug), [posts, selectedSlug]);
+  const publicPostHref = selectedSlug && form.published ? `/bookshelf/${form.slug || selectedSlug}` : null;
 
   useEffect(() => {
     const storedSecret = localStorage.getItem("bookshelf-admin-secret");
@@ -137,11 +164,45 @@ export function AdminBookshelfClient() {
       });
 
       setSelectedSlug(data.post.slug);
-      setForm({ ...payload, coverImage: data.post.coverImage ?? payload.coverImage });
+      setForm({
+        title: data.post.title,
+        slug: data.post.slug,
+        description: data.post.description,
+        topic: data.post.topic,
+        tags: data.post.tags,
+        content: data.post.content,
+        coverImage: data.post.coverImage ?? payload.coverImage,
+        published: data.post.published,
+        featured: Boolean(data.post.featured),
+      });
       await loadPosts();
-      setMessage("Đã lưu bài.");
+      setMessage(data.post.published ? "Đã lưu và bài sẽ hiển thị ở /bookshelf." : "Đã lưu draft. Draft chưa hiển thị ở /bookshelf.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không lưu được bài.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function publishPost(nextPublished: boolean) {
+    if (!selectedSlug) {
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      const data = await api<{ post: BookshelfPost }>(`/api/admin/bookshelf/${selectedSlug}`, {
+        method: "PATCH",
+        body: JSON.stringify({ action: nextPublished ? "publish" : "unpublish" }),
+      });
+
+      setForm((current) => ({ ...current, published: data.post.published }));
+      await loadPosts();
+      setMessage(nextPublished ? "Đã publish bài. Bài sẽ hiển thị ở /bookshelf." : "Đã chuyển về draft. Draft chưa hiển thị ở /bookshelf.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Không đổi trạng thái bài.");
     } finally {
       setIsLoading(false);
     }
@@ -167,39 +228,94 @@ export function AdminBookshelfClient() {
     }
   }
 
+  async function uploadAsset(file: File, options?: UploadAssetOptions) {
+    const presign = await api<PresignedUpload>("/api/admin/uploads/presign", {
+      method: "POST",
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type,
+        size: file.size,
+        scope: options?.scope,
+        slug: options?.slug,
+      }),
+    });
+    const upload = await fetch(presign.uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "content-type": file.type,
+      },
+    });
+
+    if (!upload.ok) {
+      throw new Error("Upload lên R2 thất bại.");
+    }
+
+    await api("/api/admin/uploads/complete", {
+      method: "POST",
+      body: JSON.stringify({ key: presign.key }),
+    });
+
+    return presign;
+  }
+
   async function uploadCover(file: File) {
     setIsUploading(true);
     setMessage("");
 
     try {
-      const presign = await api<{ uploadUrl: string; key: string; publicUrl: string }>("/api/admin/uploads/presign", {
-        method: "POST",
-        body: JSON.stringify({ filename: file.name, contentType: file.type, size: file.size }),
-      });
-      const upload = await fetch(presign.uploadUrl, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "content-type": file.type,
-        },
-      });
-
-      if (!upload.ok) {
-        throw new Error("Upload lên R2 thất bại.");
-      }
-
-      await api("/api/admin/uploads/complete", {
-        method: "POST",
-        body: JSON.stringify({ key: presign.key }),
-      });
-
-      setForm((current) => ({ ...current, coverImage: presign.key }));
+      const upload = await uploadAsset(file);
+      setForm((current) => ({ ...current, coverImage: upload.key }));
       setMessage("Đã upload cover.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không upload được file.");
     } finally {
       setIsUploading(false);
     }
+  }
+
+  async function insertUploadIntoContent(file: File) {
+    setIsUploading(true);
+    setMessage("");
+
+    try {
+      const attachmentSlug = selectedSlug ?? slugify(form.slug || form.title);
+      const upload = await uploadAsset(file, attachmentSlug ? { scope: "bookshelf-post", slug: attachmentSlug } : undefined);
+      const snippet = markdownForUpload(file, upload.key);
+      insertIntoContent(snippet);
+      setMessage("Đã upload và chèn vào nội dung.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Không chèn được file.");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  function insertIntoContent(snippet: string) {
+    const textarea = contentRef.current;
+
+    setForm((current) => {
+      if (!textarea) {
+        const nextContent = current.content ? `${current.content}\n\n${snippet}` : snippet;
+        return { ...current, content: nextContent };
+      }
+
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const before = current.content.slice(0, start);
+      const after = current.content.slice(end);
+      const needsBeforeBreak = before && !before.endsWith("\n") ? "\n\n" : "";
+      const needsAfterBreak = after && !after.startsWith("\n") ? "\n\n" : "";
+      const nextContent = `${before}${needsBeforeBreak}${snippet}${needsAfterBreak}${after}`;
+
+      requestAnimationFrame(() => {
+        textarea.focus();
+        const cursor = before.length + needsBeforeBreak.length + snippet.length;
+        textarea.setSelectionRange(cursor, cursor);
+      });
+
+      return { ...current, content: nextContent };
+    });
   }
 
   function updateField<Key extends keyof BookshelfPostInput>(key: Key, value: BookshelfPostInput[Key]) {
@@ -249,7 +365,27 @@ export function AdminBookshelfClient() {
       <section className="rounded-3xl border border-border bg-background p-4 shadow-soft">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-semibold">{selectedPost ? "Sửa bài" : "Tạo bài"}</h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {publicPostHref ? (
+              <a
+                href={publicPostHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring rounded-xl border border-border px-3 py-2 text-sm font-semibold"
+              >
+                View public
+              </a>
+            ) : null}
+            {selectedSlug ? (
+              <button
+                type="button"
+                onClick={() => publishPost(!form.published)}
+                disabled={isLoading}
+                className="focus-ring rounded-xl border border-border px-3 py-2 text-sm font-semibold disabled:opacity-60"
+              >
+                {form.published ? "Unpublish" : "Publish"}
+              </button>
+            ) : null}
             {selectedSlug ? (
               <button type="button" onClick={deletePost} className="focus-ring rounded-xl border border-red-500/30 px-3 py-2 text-sm font-semibold text-red-600">
                 Delete
@@ -294,7 +430,22 @@ export function AdminBookshelfClient() {
               disabled={isUploading}
               onChange={(event) => {
                 const file = event.target.files?.[0];
+                event.currentTarget.value = "";
                 if (file) void uploadCover(file);
+              }}
+              className="mt-2 block w-full text-sm"
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            Chèn ảnh/file
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,text/plain,application/zip"
+              disabled={isUploading}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.currentTarget.value = "";
+                if (file) void insertUploadIntoContent(file);
               }}
               className="mt-2 block w-full text-sm"
             />
@@ -310,10 +461,16 @@ export function AdminBookshelfClient() {
             </label>
           </div>
         </div>
+        {!form.published ? (
+          <p className="mt-4 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-800 dark:text-amber-200">
+            Bài đang là draft nên chưa xuất hiện ở trang /bookshelf. Bấm Publish hoặc bật published rồi Save.
+          </p>
+        ) : null}
 
         <label className="mt-5 block text-sm font-semibold">
-          MDX content
+          Markdown / MDX-like content
           <textarea
+            ref={contentRef}
             value={form.content}
             onChange={(event) => updateField("content", event.target.value)}
             rows={18}

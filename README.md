@@ -140,7 +140,9 @@ Admin:
 - Vao `/admin/bookshelf`.
 - Nhap `ADMIN_SECRET`.
 - Tao, sua, xoa, publish/unpublish bai.
-- Upload cover qua presigned PUT URL, khong dua R2 secret ra client.
+- Upload cover va chen anh/file vao noi dung qua presigned PUT URL.
+- Anh/file chen trong bai se duoc luu vao `bookshelf/posts/[slug]/attachments/` khi bai co slug.
+- Khong dua R2 secret ra client; admin API luon can `ADMIN_SECRET`.
 
 Env can co tren local/Vercel:
 

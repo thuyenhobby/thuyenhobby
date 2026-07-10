@@ -1,20 +1,34 @@
 import ReactMarkdown from "react-markdown";
 import type { ComponentProps } from "react";
+import Image from "next/image";
 import { getR2PublicUrl } from "@/lib/r2";
 
 type BookshelfMdxContentProps = {
   content: string;
 };
 
+function resolveContentUrl(value?: string) {
+  if (!value) {
+    return "";
+  }
+
+  if (/^(https?:|mailto:|tel:|#|\/)/i.test(value)) {
+    return value;
+  }
+
+  return getR2PublicUrl(value);
+}
+
 const components: ComponentProps<typeof ReactMarkdown>["components"] = {
   h2: ({ children }) => <h2 className="mt-10 text-2xl font-semibold tracking-tight">{children}</h2>,
   h3: ({ children }) => <h3 className="mt-8 text-xl font-semibold tracking-tight">{children}</h3>,
   p: ({ children }) => <p className="mt-5 leading-8 text-muted">{children}</p>,
   a: ({ href, children }) => {
-    const isExternal = Boolean(href && /^https?:\/\//i.test(href));
+    const resolvedHref = resolveContentUrl(href);
+    const isExternal = Boolean(resolvedHref && /^https?:\/\//i.test(resolvedHref));
 
     return (
-      <a href={href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined} className="font-semibold text-accent underline-offset-4 hover:underline">
+      <a href={resolvedHref} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined} className="font-semibold text-accent underline-offset-4 hover:underline">
         {children}
       </a>
     );
@@ -26,9 +40,21 @@ const components: ComponentProps<typeof ReactMarkdown>["components"] = {
   code: ({ children }) => <code className="rounded-md bg-foreground/[0.08] px-1.5 py-0.5 font-mono text-sm text-foreground">{children}</code>,
   pre: ({ children }) => <pre className="mt-6 overflow-x-auto rounded-2xl border border-border bg-slate-950 p-4 text-sm leading-7 text-slate-100">{children}</pre>,
   img: ({ src, alt }) => {
-    const imageSrc = src ? getR2PublicUrl(String(src)) : "";
+    const imageSrc = resolveContentUrl(src ? String(src) : "");
 
-    return <img src={imageSrc} alt={alt ?? ""} className="mt-6 h-auto w-full rounded-2xl border border-border object-cover" loading="lazy" />;
+    if (!imageSrc) {
+      return null;
+    }
+
+    return (
+      <Image
+        src={imageSrc}
+        alt={alt ?? ""}
+        width={1200}
+        height={675}
+        className="mt-6 h-auto w-full rounded-2xl border border-border object-cover"
+      />
+    );
   },
 };
 

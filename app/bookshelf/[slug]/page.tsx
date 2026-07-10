@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookshelfGrid } from "@/components/bookshelf/bookshelf-grid";
@@ -11,6 +12,7 @@ import { siteConfig } from "@/lib/site";
 import type { BookshelfPostMetadata } from "@/types/bookshelf";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 type BookshelfPostPageProps = {
   params: Promise<{ slug: string }>;
@@ -70,7 +72,7 @@ export default async function BookshelfPostPage({ params }: BookshelfPostPagePro
   return (
     <PageShell className="max-w-3xl">
       <Link href="/bookshelf" className="focus-ring rounded-md text-sm font-semibold text-accent hover:underline">
-        ← Quay lại Giá sách
+        Back to Gia sach
       </Link>
       <article className="mt-8">
         <p className="text-sm font-semibold text-accent">{post.topic}</p>
@@ -82,14 +84,20 @@ export default async function BookshelfPostPage({ params }: BookshelfPostPagePro
           ))}
         </div>
         {post.coverImage ? (
-          <img src={post.coverImage} alt={post.title} className="mt-8 h-auto w-full rounded-3xl border border-border object-cover" />
+          <Image
+            src={post.coverImage}
+            alt={post.title}
+            width={1200}
+            height={675}
+            className="mt-8 h-auto w-full rounded-3xl border border-border object-cover"
+          />
         ) : null}
         <BookshelfMdxContent content={post.content} />
       </article>
 
       {relatedPosts.length > 0 ? (
         <section className="mt-12">
-          <h2 className="mb-5 text-2xl font-semibold tracking-tight">Có thể đọc tiếp</h2>
+          <h2 className="mb-5 text-2xl font-semibold tracking-tight">Doc tiep</h2>
           <BookshelfGrid posts={relatedPosts} />
         </section>
       ) : null}

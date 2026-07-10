@@ -42,7 +42,7 @@ function postBaseKey(slug: string) {
 function estimateReadingTime(content: string) {
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const minutes = Math.max(1, Math.ceil(wordCount / 220));
-  return `${minutes} phút đọc`;
+  return `${minutes} min read`;
 }
 
 function sortNewestFirst<T extends BookshelfPostMetadata>(posts: T[]) {
@@ -64,7 +64,7 @@ function createMetadata(input: BookshelfPostInput, existing?: BookshelfPostMetad
     updatedAt: now,
     topic: input.topic.trim(),
     tags: input.tags.map((tag) => tag.trim()).filter(Boolean),
-    readingTime: existing?.readingTime || estimateReadingTime(input.content),
+    readingTime: estimateReadingTime(input.content),
     coverImage: rawCoverImage(input.coverImage),
     published: Boolean(input.published),
     featured: Boolean(input.featured),
@@ -213,24 +213,42 @@ export async function deleteBookshelfPost(slug: string) {
   await saveBookshelfIndex(posts.filter((post) => post.slug !== slug));
 }
 
-export async function publishBookshelfPost(slug: string) {
-  const post = await getAdminBookshelfPostBySlug(slug);
+async function setBookshelfPostPublishedStatus(slug: string, published: boolean) {
+  assertSafeSlug(slug);
 
-  if (!post) {
+  const posts = await getBookshelfIndex();
+  const current = posts.find((post) => post.slug === slug);
+
+  if (!current) {
     throw new Error("Bookshelf post not found.");
   }
 
-  return updateBookshelfPost(slug, { ...post, published: true });
+  const metadata = {
+    ...current,
+    published,
+    updatedAt: new Date().toISOString().slice(0, 10),
+  } satisfies BookshelfPostMetadata;
+  const baseKey = postBaseKey(slug);
+  const content = await getR2TextObject(`${baseKey}/index.mdx`);
+
+  if (!content) {
+    throw new Error("Bookshelf post content not found.");
+  }
+
+  await Promise.all([
+    putR2Object(`${baseKey}/metadata.json`, JSON.stringify(metadata, null, 2), "application/json; charset=utf-8"),
+    saveBookshelfIndex(posts.map((post) => (post.slug === slug ? metadata : post))),
+  ]);
+
+  return { ...normalizeMetadata(metadata), content } satisfies BookshelfPost;
+}
+
+export async function publishBookshelfPost(slug: string) {
+  return setBookshelfPostPublishedStatus(slug, true);
 }
 
 export async function unpublishBookshelfPost(slug: string) {
-  const post = await getAdminBookshelfPostBySlug(slug);
-
-  if (!post) {
-    throw new Error("Bookshelf post not found.");
-  }
-
-  return updateBookshelfPost(slug, { ...post, published: false });
+  return setBookshelfPostPublishedStatus(slug, false);
 }
 
 export async function getRelatedBookshelfPosts(slug: string, limit = 3) {

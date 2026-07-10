@@ -84,6 +84,20 @@ function canonicalQuery(params: URLSearchParams) {
     .join("&");
 }
 
+function toFetchBody(body: string | Buffer | Uint8Array | undefined): BodyInit | undefined {
+  if (body === undefined) {
+    return undefined;
+  }
+
+  if (typeof body === "string") {
+    return body;
+  }
+
+  const copy = new Uint8Array(body.byteLength);
+  copy.set(body);
+  return copy.buffer;
+}
+
 async function signedFetch(method: string, key: string, init: { body?: string | Buffer | Uint8Array; contentType?: string; query?: URLSearchParams } = {}) {
   const config = getR2Config();
   const now = amzDate();
@@ -114,7 +128,7 @@ async function signedFetch(method: string, key: string, init: { body?: string | 
   return fetch(url, {
     method,
     headers,
-    body: method === "GET" || method === "HEAD" ? undefined : body,
+    body: method === "GET" || method === "HEAD" ? undefined : toFetchBody(body),
     cache: "no-store",
   });
 }

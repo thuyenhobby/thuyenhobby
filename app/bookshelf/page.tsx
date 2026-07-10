@@ -6,10 +6,11 @@ import { getBookshelfPostsForPublicPage } from "@/lib/bookshelf-r2";
 import { createPageMetadata } from "@/lib/metadata";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata({
-  title: "Giá sách",
-  description: "Nơi đặt bài viết và ghi chép dài hơn.",
+  title: "Gia sach",
+  description: "Noi dat bai viet va ghi chep dai hon.",
   path: "/bookshelf",
 });
 
@@ -21,7 +22,7 @@ export default async function BookshelfPage() {
   return (
     <PageShell>
       <p className="mb-5 font-mono text-sm font-bold uppercase tracking-[0.22em] text-violet-700 dark:text-violet-300">
-        Giá sách - {posts.length} ghi chép đang nằm trên kệ.
+        Gia sach - {posts.length} ghi chep dang nam tren ke.
       </p>
 
       <div className="mb-8 flex h-12 items-end gap-2 border-b-4 border-violet-950/20 dark:border-violet-200/15" aria-hidden="true">
@@ -35,7 +36,7 @@ export default async function BookshelfPage() {
       </div>
 
       {posts.length === 0 ? (
-        <EmptyState title="Kệ sách đang trống" description="Chưa có bài published hoặc R2 chưa có index." />
+        <EmptyState title="Ke sach dang trong" description="Chua co bai published hoac R2 chua co index." />
       ) : (
         <>
           <FeaturedBooks posts={featuredPosts} />
@@ -46,9 +47,9 @@ export default async function BookshelfPage() {
                 <p className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-violet-700 dark:text-violet-300">
                   Shelf row
                 </p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight">Ghi chép mới</h2>
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight">Ghi chep moi</h2>
               </div>
-              <span className="text-sm font-semibold text-muted">{regularPosts.length} bài</span>
+              <span className="text-sm font-semibold text-muted">{regularPosts.length} bai</span>
             </div>
             <BookshelfGrid posts={regularPosts.length > 0 ? regularPosts : posts} />
           </section>
