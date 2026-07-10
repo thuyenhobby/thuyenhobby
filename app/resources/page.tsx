@@ -1,5 +1,9 @@
 import { ResourceGrid } from "@/components/resources/resource-grid";
+import { ZoneNextLinks } from "@/components/room/zone-next-links";
+import { PageHeading } from "@/components/ui/page-heading";
 import { PageShell } from "@/components/ui/page-shell";
+import { SectionHeader } from "@/components/ui/section-header";
+import { StatPill } from "@/components/ui/stat-pill";
 import { createPageMetadata } from "@/lib/metadata";
 import {
   getFavoriteResources,
@@ -10,14 +14,14 @@ import {
 } from "@/lib/resources";
 
 export const metadata = createPageMetadata({
-  title: "Rương đồ",
-  description: "Kho tài nguyên cá nhân: link, checklist, snippet và file.",
+  title: "Memory — anx.thnw",
+  description: "Links, files, snippets, and saved things.",
   path: "/resources",
 });
 
 const categoryLabel: Record<ResourceItem["category"], string> = {
   docs: "Docs",
-  tool: "Tools",
+  tool: "Utilities",
   template: "Templates",
   snippet: "Snippets",
   reference: "References",
@@ -30,18 +34,29 @@ export default function ResourcesPage() {
   const categories = getResourceCategories();
 
   return (
-    <PageShell>
-      <p className="mb-5 font-mono text-sm font-bold uppercase tracking-[0.22em] text-amber-800 dark:text-amber-300">
-        Rương đồ - {resources.length} món, {favorites.length} pinned, {categories.length} ngăn.
-      </p>
+    <PageShell variant="wide">
+      <PageHeading
+        eyebrow="Memory"
+        title="Memory"
+        description="links, files, snippets, and things I don’t want to search twice."
+        size="sm"
+        compact
+        stats={
+          <>
+            <StatPill label="saved" value={resources.length} tone="amber" />
+            <StatPill label="pinned" value={favorites.length} tone="amber" />
+            <StatPill label="blocks" value={categories.length} tone="amber" />
+          </>
+        }
+      />
 
-      <section className="rounded-3xl border border-amber-800/15 bg-amber-50/35 p-3 dark:border-amber-300/10 dark:bg-amber-950/10" aria-label="Resource categories">
+      <section className="rounded-2xl border border-amber-800/15 bg-amber-50/35 p-2 dark:border-amber-300/10 dark:bg-amber-950/10 md:p-3" aria-label="Memory categories">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {categories.map((category) => (
             <a
               key={category}
               href={`#${category}`}
-              className="focus-ring flex min-w-max items-center gap-2 rounded-xl border border-amber-900/15 bg-background px-3 py-2 text-sm font-semibold text-amber-900 transition hover:-translate-y-0.5 hover:border-amber-500/50 dark:border-amber-300/15 dark:text-amber-100"
+              className="focus-ring flex min-w-max items-center gap-2 rounded-xl border border-amber-900/15 bg-background px-3 py-1.5 text-sm font-semibold text-amber-900 transition hover:-translate-y-0.5 hover:border-amber-500/50 dark:border-amber-300/15 dark:text-amber-100 md:py-2"
             >
               <span className="size-2 rounded-full bg-amber-500" aria-hidden="true" />
               {categoryLabel[category]}
@@ -54,32 +69,30 @@ export default function ResourcesPage() {
       </section>
 
       {favorites.length > 0 ? (
-        <section className="mt-8">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <h2 className="text-xl font-semibold tracking-tight">Pinned items</h2>
-            <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">ưu tiên mở nhanh</span>
-          </div>
+        <section className="mt-5 md:mt-6">
+          <SectionHeader title="pinned memory" eyebrow="saved for later" action={<span className="text-xs font-semibold text-amber-700 dark:text-amber-300 md:text-sm">{favorites.length} items</span>} />
           <ResourceGrid resources={favorites} variant="pinned" />
         </section>
       ) : null}
 
-      <section className="mt-8 space-y-6">
+      <section className="mt-5 space-y-4 md:mt-6 md:space-y-5" aria-label="Memory blocks">
         {categories.map((category) => {
           const items = getResourcesByCategory(category);
 
           return (
-            <div key={category} id={category} className="scroll-mt-24 rounded-3xl border border-amber-900/10 bg-amber-50/25 p-4 dark:border-amber-300/10 dark:bg-amber-950/10">
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <h2 className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-amber-800 dark:text-amber-300">
-                  {categoryLabel[category]}
-                </h2>
-                <span className="text-xs font-semibold text-muted">{items.length} items</span>
-              </div>
+            <div key={category} id={category} className="scroll-mt-20 rounded-2xl border border-amber-900/10 bg-amber-50/25 p-3 dark:border-amber-300/10 dark:bg-amber-950/10 md:p-4">
+              <SectionHeader
+                title={categoryLabel[category]}
+                eyebrow="archive block"
+                action={<span className="text-xs font-semibold text-muted">{items.length} items</span>}
+              />
               <ResourceGrid resources={items} />
             </div>
           );
         })}
       </section>
+
+      <ZoneNextLinks current="memory" />
     </PageShell>
   );
 }

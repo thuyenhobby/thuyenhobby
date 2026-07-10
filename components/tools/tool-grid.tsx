@@ -8,11 +8,11 @@ type ToolGridProps = {
 
 export function ToolGrid({ tools }: ToolGridProps) {
   if (tools.length === 0) {
-    return <EmptyState title="Chưa có công cụ" description="Nhóm này đang trống." />;
+    return <EmptyState title="this drawer is suspiciously empty." description="still cooking." />;
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
       {tools.map((tool) => (
         <ToolCard key={tool.id} tool={tool} />
       ))}

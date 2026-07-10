@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getBookshelfPostsForPublicPage } from "@/lib/bookshelf-r2";
 import { siteConfig } from "@/lib/site";
 
-const staticRoutes = ["", "/resources", "/bookshelf", "/tools", "/about"];
+const staticRoutes = ["", "/about", "/bookshelf", "/resources", "/tools"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();

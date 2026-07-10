@@ -1,34 +1,26 @@
 import { Container } from "@/components/layout/container";
 import { siteConfig } from "@/lib/site";
 
-const socialLinks = [
-  { href: "/", label: "Room" },
-  { href: "/resources", label: "Rương đồ" },
-  { href: "/bookshelf", label: "Giá sách" },
-  { href: "/tools", label: "Công cụ" },
-  { href: "https://github.com/", label: "GitHub" },
+const workspaceLinks = [
+  { href: "/", label: "Workspace" },
+  { href: "/about", label: "Me" },
+  { href: "/bookshelf", label: "Post" },
+  { href: "/resources", label: "Memory" },
+  { href: "/tools", label: "Drawer" },
 ];
 
 export function Footer() {
   return (
-    <footer className="border-t border-border py-10">
-      <Container className="grid gap-6 text-sm text-muted md:grid-cols-[1fr_auto] md:items-end">
+    <footer className="border-t border-border py-5 md:py-7">
+      <Container className="grid gap-4 text-sm text-muted md:grid-cols-[1fr_auto] md:items-center">
         <div>
-          <p className="font-semibold text-foreground">{siteConfig.name}</p>
-          <p className="mt-2 max-w-xl leading-6">
-            Built as a personal digital room.
-          </p>
-          <p className="mt-4">&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
+          <p className="font-mono font-semibold text-foreground">{siteConfig.name}</p>
+          <p className="mt-1 text-xs leading-5 md:text-sm">quietly building small things.</p>
+          <p className="mt-2 text-xs">&copy; {new Date().getFullYear()} {siteConfig.name}.</p>
         </div>
-        <nav aria-label="Social links" className="flex flex-wrap gap-3">
-          {socialLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="focus-ring rounded-md font-medium transition hover:text-accent"
-              target={link.href.startsWith("http") ? "_blank" : undefined}
-              rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-            >
+        <nav aria-label="Footer workspace links" className="flex flex-wrap gap-x-3 gap-y-2">
+          {workspaceLinks.map((link) => (
+            <a key={link.label} href={link.href} className="focus-ring rounded-md font-medium transition hover:text-accent">
               {link.label}
             </a>
           ))}

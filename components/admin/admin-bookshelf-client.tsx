@@ -325,7 +325,7 @@ export function AdminBookshelfClient() {
   return (
     <main className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[320px_1fr]">
       <section className="rounded-3xl border border-border bg-background p-4 shadow-soft">
-        <h1 className="text-xl font-semibold">Bookshelf Admin</h1>
+        <h1 className="text-xl font-semibold">Post Admin</h1>
         <label className="mt-4 block text-sm font-semibold">
           ADMIN_SECRET
           <input

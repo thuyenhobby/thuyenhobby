@@ -7,25 +7,25 @@ import { nowData } from "@/lib/now";
 
 export const metadata = createPageMetadata({
   title: "Now",
-  description: "Trạng thái hiện tại của Thuyên: đang học gì, xây gì, thử gì và quan tâm điều gì.",
+  description: "What I am learning, building, testing, and keeping nearby.",
   path: "/now",
 });
 
 const sections = [
-  { title: "Đang học", items: nowData.currentlyLearning },
-  { title: "Đang xây", items: nowData.currentlyBuilding },
-  { title: "Đang thử", items: nowData.currentlyExploring },
-  { title: "Đang đọc", items: nowData.currentlyReading },
-  { title: "Mục tiêu gần nhất", items: nowData.shortTermGoals },
+  { title: "learning", items: nowData.currentlyLearning },
+  { title: "building", items: nowData.currentlyBuilding },
+  { title: "testing", items: nowData.currentlyExploring },
+  { title: "reading", items: nowData.currentlyReading },
+  { title: "next", items: nowData.shortTermGoals },
 ];
 
 export default function NowPage() {
   return (
     <PageShell>
       <SectionHeader
-        eyebrow="Desk"
+        eyebrow="Me"
         title="Now"
-        description="Một dashboard nhỏ cho trạng thái hiện tại: tôi đang học gì, đang xây gì và đang để ý điều gì."
+        description="A tiny status board for what is currently on my desk."
       />
       <div className="mt-10 grid gap-5 md:grid-cols-2">
         {sections.map((section) => (

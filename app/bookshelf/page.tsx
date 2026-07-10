@@ -1,58 +1,63 @@
+import { BookshelfControls } from "@/components/bookshelf/bookshelf-controls";
 import { BookshelfGrid } from "@/components/bookshelf/bookshelf-grid";
+import { BookshelfHeader } from "@/components/bookshelf/bookshelf-header";
 import { FeaturedBooks } from "@/components/bookshelf/featured-books";
+import { ZoneNextLinks } from "@/components/room/zone-next-links";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageShell } from "@/components/ui/page-shell";
+import { SectionHeader } from "@/components/ui/section-header";
 import { getBookshelfPostsForPublicPage } from "@/lib/bookshelf-r2";
 import { createPageMetadata } from "@/lib/metadata";
+import type { BookshelfPostMetadata } from "@/types/bookshelf";
 
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata({
-  title: "Gia sach",
-  description: "Noi dat bai viet va ghi chep dai hon.",
+  title: "Post — anx.thnw",
+  description: "Longer notes, thoughts, and things worth keeping.",
   path: "/bookshelf",
 });
+
+function getTopicCounts(posts: BookshelfPostMetadata[]) {
+  const topics = new Map<string, number>();
+
+  for (const post of posts) {
+    topics.set(post.topic, (topics.get(post.topic) ?? 0) + 1);
+  }
+
+  return [...topics.entries()]
+    .map(([topic, count]) => ({ topic, count }))
+    .sort((a, b) => b.count - a.count || a.topic.localeCompare(b.topic));
+}
 
 export default async function BookshelfPage() {
   const posts = await getBookshelfPostsForPublicPage();
   const featuredPosts = posts.filter((post) => post.featured);
   const regularPosts = posts.filter((post) => !post.featured);
+  const topicCounts = getTopicCounts(posts);
 
   return (
-    <PageShell>
-      <p className="mb-5 font-mono text-sm font-bold uppercase tracking-[0.22em] text-violet-700 dark:text-violet-300">
-        Gia sach - {posts.length} ghi chep dang nam tren ke.
-      </p>
-
-      <div className="mb-8 flex h-12 items-end gap-2 border-b-4 border-violet-950/20 dark:border-violet-200/15" aria-hidden="true">
-        {posts.slice(0, 10).map((post, index) => (
-          <span
-            key={post.id}
-            className="w-8 rounded-t-md bg-violet-500/25"
-            style={{ height: `${36 + (index % 4) * 8}px` }}
-          />
-        ))}
-      </div>
+    <PageShell variant="wide">
+      <BookshelfHeader totalPosts={posts.length} featuredPosts={featuredPosts.length} topicCount={topicCounts.length} />
+      <BookshelfControls topics={topicCounts} />
 
       {posts.length === 0 ? (
-        <EmptyState title="Ke sach dang trong" description="Chua co bai published hoac R2 chua co index." />
+        <EmptyState title="nothing here yet." description="brain cache is clean for now." />
       ) : (
         <>
           <FeaturedBooks posts={featuredPosts} />
 
-          <section className="mt-8">
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <div>
-                <p className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-violet-700 dark:text-violet-300">
-                  Shelf row
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight">Ghi chep moi</h2>
-              </div>
-              <span className="text-sm font-semibold text-muted">{regularPosts.length} bai</span>
-            </div>
+          <section id="shelf-list" className="mt-5 md:mt-6">
+            <SectionHeader
+              eyebrow="log feed"
+              title="recent notes"
+              action={<span className="text-xs font-semibold text-muted md:text-sm">{regularPosts.length || posts.length} posts</span>}
+            />
             <BookshelfGrid posts={regularPosts.length > 0 ? regularPosts : posts} />
           </section>
+
+          <ZoneNextLinks current="post" />
         </>
       )}
     </PageShell>

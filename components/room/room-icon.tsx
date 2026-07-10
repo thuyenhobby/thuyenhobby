@@ -15,6 +15,53 @@ function IconBase({ children, ...props }: SVGProps<SVGSVGElement>) {
 
 export function RoomIcon({ name, className }: RoomIconProps) {
   switch (name) {
+    case "workspace":
+      return (
+        <IconBase className={className}>
+          <path d="M4 5h16" />
+          <path d="M4 12h16" />
+          <path d="M4 19h16" />
+          <path d="M8 5v14" />
+          <path d="M16 5v14" />
+        </IconBase>
+      );
+    case "me":
+      return (
+        <IconBase className={className}>
+          <rect x="5" y="4" width="14" height="16" rx="3" />
+          <circle cx="12" cy="10" r="2.5" />
+          <path d="M8.5 16a4 4 0 0 1 7 0" />
+        </IconBase>
+      );
+    case "post":
+      return (
+        <IconBase className={className}>
+          <path d="M7 4h10a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
+          <path d="M9 8h6" />
+          <path d="M9 12h5" />
+          <path d="M9 16h7" />
+        </IconBase>
+      );
+    case "memory":
+      return (
+        <IconBase className={className}>
+          <path d="M5 7h14v12H5z" />
+          <path d="M8 7V5h8v2" />
+          <path d="M8 11h8" />
+          <path d="M8 15h5" />
+        </IconBase>
+      );
+    case "drawer":
+      return (
+        <IconBase className={className}>
+          <rect x="4" y="5" width="16" height="14" rx="2" />
+          <path d="M4 10h16" />
+          <path d="M4 14h16" />
+          <path d="M11 8h2" />
+          <path d="M11 12h2" />
+          <path d="M11 17h2" />
+        </IconBase>
+      );
     case "room":
       return (
         <IconBase className={className}>

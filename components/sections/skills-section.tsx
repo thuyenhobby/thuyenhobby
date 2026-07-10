@@ -12,7 +12,7 @@ const skillGroups = [
     skills: ["REST API", "Server Actions", "Authentication Basics", "Data Modeling"],
   },
   {
-    title: "Tools",
+    title: "Workflow",
     skills: ["Git", "ESLint", "npm", "VS Code", "Figma Basics"],
   },
   {

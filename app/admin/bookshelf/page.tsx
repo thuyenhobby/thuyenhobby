@@ -1,7 +1,7 @@
 import { AdminBookshelfClient } from "@/components/admin/admin-bookshelf-client";
 
 export const metadata = {
-  title: "Admin Bookshelf",
+  title: "Post Admin",
 };
 
 export default function AdminBookshelfPage() {

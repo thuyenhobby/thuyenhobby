@@ -51,6 +51,6 @@ export const ideas: Idea[] = [
     title: "Command Library",
     description: "Thư viện command hay dùng cho Git, npm, Next.js và Vercel.",
     status: "idea",
-    tags: ["Commands", "Tools"],
+    tags: ["Commands", "Drawer"],
   },
 ];

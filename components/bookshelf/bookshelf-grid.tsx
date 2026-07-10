@@ -7,13 +7,12 @@ type BookshelfGridProps = {
 
 export function BookshelfGrid({ posts }: BookshelfGridProps) {
   return (
-    <div className="relative">
-      <div className="absolute inset-x-0 bottom-0 hidden h-3 rounded-full bg-violet-950/10 dark:bg-violet-200/10 md:block" aria-hidden="true" />
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    <div className="overflow-hidden rounded-2xl border border-violet-500/15 bg-background/75 shadow-sm dark:bg-slate-950/45">
+      <ul className="divide-y divide-violet-500/12">
         {posts.map((post) => (
           <BookCard key={post.id} post={post} />
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookshelfGrid } from "@/components/bookshelf/bookshelf-grid";
+import { ArticleShell } from "@/components/bookshelf/article-shell";
 import { BookshelfMdxContent } from "@/components/bookshelf/mdx-components";
 import { PageShell } from "@/components/ui/page-shell";
-import { Tag } from "@/components/ui/tag";
 import { getBookshelfPostBySlug, getRelatedBookshelfPosts } from "@/lib/bookshelf-r2";
 import { getShelfPostBySlug } from "@/lib/bookshelf";
 import { siteConfig } from "@/lib/site";
@@ -37,6 +34,7 @@ export async function generateMetadata({ params }: BookshelfPostPageProps): Prom
   return {
     title: post.title,
     description: post.description,
+    keywords: post.tags,
     alternates: {
       canonical: `/bookshelf/${post.slug}`,
     },
@@ -49,6 +47,7 @@ export async function generateMetadata({ params }: BookshelfPostPageProps): Prom
       type: "article",
       publishedTime: post.date,
       modifiedTime: post.updatedAt,
+      tags: post.tags,
       images: post.coverImage ? [{ url: post.coverImage }] : undefined,
     },
   };
@@ -70,37 +69,10 @@ export default async function BookshelfPostPage({ params }: BookshelfPostPagePro
   }
 
   return (
-    <PageShell className="max-w-3xl">
-      <Link href="/bookshelf" className="focus-ring rounded-md text-sm font-semibold text-accent hover:underline">
-        Back to Gia sach
-      </Link>
-      <article className="mt-8">
-        <p className="text-sm font-semibold text-accent">{post.topic}</p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight">{post.title}</h1>
-        <p className="mt-4 text-lg leading-8 text-muted">{post.description}</p>
-        <div className="mt-5 flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
-        </div>
-        {post.coverImage ? (
-          <Image
-            src={post.coverImage}
-            alt={post.title}
-            width={1200}
-            height={675}
-            className="mt-8 h-auto w-full rounded-3xl border border-border object-cover"
-          />
-        ) : null}
+    <PageShell variant="compact">
+      <ArticleShell post={post} relatedPosts={relatedPosts}>
         <BookshelfMdxContent content={post.content} />
-      </article>
-
-      {relatedPosts.length > 0 ? (
-        <section className="mt-12">
-          <h2 className="mb-5 text-2xl font-semibold tracking-tight">Doc tiep</h2>
-          <BookshelfGrid posts={relatedPosts} />
-        </section>
-      ) : null}
+      </ArticleShell>
     </PageShell>
   );
 }

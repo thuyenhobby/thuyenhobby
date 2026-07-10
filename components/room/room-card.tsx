@@ -38,24 +38,24 @@ export function RoomCard({ zone }: RoomCardProps) {
     <Link
       href={zone.href}
       className={cn(
-        "focus-ring group block rounded-2xl border p-4 transition duration-200 hover:-translate-y-1 hover:shadow-soft",
+        "focus-ring group block rounded-2xl border p-3 transition duration-200 hover:-translate-y-0.5 hover:shadow-soft md:p-4",
         accent.frame,
       )}
     >
-      <article className="flex h-full flex-col gap-4">
+      <article className="flex h-full flex-col gap-3 md:gap-4">
         <div className="flex items-center justify-between gap-3">
-          <span className={cn("flex size-11 items-center justify-center rounded-xl ring-1", accent.icon)}>
-            <RoomIcon name={zone.iconName} className="size-5" />
+          <span className={cn("flex size-9 items-center justify-center rounded-xl ring-1 md:size-11", accent.icon)}>
+            <RoomIcon name={zone.iconName} className="size-4 md:size-5" />
           </span>
           {zone.status ? <StatusBadge className="bg-background/60">{zone.status}</StatusBadge> : null}
         </div>
         <div>
-          <h2 className="text-lg font-semibold tracking-tight">{zone.title}</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">{zone.description}</p>
+          <h2 className="text-base font-semibold tracking-tight md:text-lg">{zone.title}</h2>
+          <p className="mt-1.5 line-clamp-2 text-sm leading-5 text-muted md:leading-6">{zone.description}</p>
         </div>
-        <div className="mt-auto flex items-center justify-between gap-4 text-sm font-semibold">
+        <div className="mt-auto flex items-center justify-between gap-4 text-xs font-semibold md:text-sm">
           <span className="text-muted">{zone.countLabel}</span>
-          <span className={accent.text}>Mở</span>
+          <span className={accent.text}>open</span>
         </div>
       </article>
     </Link>

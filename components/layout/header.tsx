@@ -6,15 +6,14 @@ import { useEffect, useState } from "react";
 import { Container } from "@/components/layout/container";
 import { RoomIcon } from "@/components/room/room-icon";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/", label: "Room", iconName: "room" },
-  { href: "/resources", label: "Rương đồ", iconName: "archive" },
-  { href: "/bookshelf", label: "Giá sách", iconName: "bookshelf" },
-  { href: "/tools", label: "Công cụ", iconName: "toolbox" },
-  { href: "/about", label: "About", iconName: "about" },
+  { href: "/", label: "Workspace", iconName: "workspace" },
+  { href: "/about", label: "Me", iconName: "me" },
+  { href: "/bookshelf", label: "Post", iconName: "post" },
+  { href: "/resources", label: "Memory", iconName: "memory" },
+  { href: "/tools", label: "Drawer", iconName: "drawer" },
 ];
 
 function isActivePath(pathname: string, href: string) {
@@ -42,17 +41,17 @@ export function Header() {
   }, [isMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
-      <Container className="relative flex min-h-14 items-center justify-between gap-3 py-2">
-        <Link href="/" className="focus-ring group flex shrink-0 items-center gap-2 rounded-xl">
-          <span className="relative flex size-9 items-center justify-center rounded-2xl border border-cyan-700/15 bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(245,158,11,0.16))] text-cyan-800 shadow-sm transition group-hover:border-cyan-600/35 dark:border-cyan-300/15 dark:text-cyan-200">
-            <span className="font-mono text-xs font-black tracking-tight">TH</span>
-            <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-amber-400 ring-2 ring-background" aria-hidden="true" />
+    <header className="sticky top-0 z-50 border-b border-border bg-background/92 backdrop-blur">
+      <Container className="relative flex min-h-12 items-center justify-between gap-2 py-1.5">
+        <Link href="/" className="focus-ring group flex shrink-0 items-center gap-2 rounded-xl" aria-label="anx.thnw home">
+          <span className="relative flex size-8 items-center justify-center rounded-xl border border-cyan-700/15 bg-[linear-gradient(135deg,rgba(34,211,238,0.14),rgba(168,85,247,0.16))] text-cyan-800 shadow-sm transition group-hover:border-cyan-600/35 dark:border-cyan-300/15 dark:text-cyan-200">
+            <span className="font-mono text-[10px] font-black tracking-tight">anx</span>
+            <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-emerald-400 ring-2 ring-background" aria-hidden="true" />
           </span>
           <span className="leading-none">
-            <span className="block text-sm font-black tracking-tight">{siteConfig.name}</span>
-            <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">
-              digital room
+            <span className="block font-mono text-sm font-black tracking-tight">anx.thnw</span>
+            <span className="hidden font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted sm:block">
+              workspace
             </span>
           </span>
         </Link>
@@ -67,7 +66,7 @@ export function Header() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "focus-ring inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1.5 text-sm font-semibold text-muted transition hover:border-border hover:bg-foreground/[0.04] hover:text-foreground",
+                  "focus-ring inline-flex items-center gap-2 rounded-full border border-transparent px-2.5 py-1.5 text-sm font-semibold text-muted transition hover:border-border hover:bg-foreground/[0.04] hover:text-foreground",
                   active && "border-border bg-foreground/[0.06] text-foreground shadow-sm",
                 )}
               >
@@ -78,7 +77,7 @@ export function Header() {
           })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <ThemeToggle />
           <button
             type="button"
@@ -86,7 +85,7 @@ export function Header() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
             onClick={() => setIsMenuOpen((open) => !open)}
-            className="focus-ring inline-flex size-10 items-center justify-center rounded-full border border-border text-foreground transition hover:border-accent hover:text-accent md:hidden"
+            className="focus-ring inline-flex size-9 items-center justify-center rounded-full border border-border text-foreground transition hover:border-accent hover:text-accent md:hidden"
           >
             <span className="sr-only">{isMenuOpen ? "Đóng menu" : "Mở menu"}</span>
             <span aria-hidden="true" className="relative block h-4 w-5">
@@ -115,7 +114,7 @@ export function Header() {
         <div
           id="mobile-navigation"
           className={cn(
-            "absolute left-4 right-4 top-[calc(100%+0.5rem)] rounded-2xl border border-border bg-background p-2 shadow-soft transition md:hidden",
+            "absolute left-4 right-4 top-[calc(100%+0.4rem)] rounded-2xl border border-border bg-background p-1.5 shadow-soft transition md:hidden",
             isMenuOpen ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0",
           )}
         >
@@ -130,7 +129,7 @@ export function Header() {
                   aria-current={active ? "page" : undefined}
                   onClick={() => setIsMenuOpen(false)}
                   className={cn(
-                    "focus-ring flex min-h-11 items-center justify-between rounded-xl border border-transparent px-3 text-sm font-semibold text-muted transition hover:border-border hover:bg-foreground/[0.04] hover:text-foreground",
+                    "focus-ring flex min-h-10 items-center justify-between rounded-xl border border-transparent px-3 text-sm font-semibold text-muted transition hover:border-border hover:bg-foreground/[0.04] hover:text-foreground",
                     active && "border-border bg-foreground/[0.06] text-foreground",
                   )}
                 >
@@ -138,7 +137,7 @@ export function Header() {
                     <RoomIcon name={item.iconName} className="size-4" />
                     {item.label}
                   </span>
-                  {active ? <span className="text-xs text-muted">active</span> : null}
+                  {active ? <span className="text-[11px] text-muted">active</span> : null}
                 </Link>
               );
             })}

@@ -6,7 +6,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata = createPageMetadata({
   title: "Links",
-  description: "Kệ tài nguyên của Thuyên: tài liệu, docs và repo đáng lưu cho hành trình học web.",
+  description: "Saved links, docs, and repos I might need again.",
   path: "/links",
 });
 
@@ -14,9 +14,9 @@ export default function LinksPage() {
   return (
     <PageShell>
       <SectionHeader
-        eyebrow="Bookshelf"
+        eyebrow="Memory"
         title="Links"
-        description="Kệ tài nguyên: tài liệu, docs và link tôi muốn giữ lại để quay về khi cần."
+        description="Saved links, docs, and repo tabs I do not want to search twice."
       />
       <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {resourceLinks.map((link) => (

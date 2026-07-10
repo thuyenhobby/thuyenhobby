@@ -30,7 +30,7 @@ export const tools: PersonalTool[] = [
     slug: "bookmark-organizer",
     description: "Gom link học tập theo tag.",
     status: "building",
-    tags: ["Links", "Resources"],
+    tags: ["Links", "Memory"],
     builtWith: ["TypeScript"],
     addedAt: "2026-07-10",
     featured: true,

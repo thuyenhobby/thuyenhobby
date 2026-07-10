@@ -1,16 +1,16 @@
-# Thuyên Room
+# anx.thnw
 
-Personal Digital Room của Thuyên: một căn phòng số cá nhân được xây bằng Next.js App Router, TypeScript, Tailwind CSS, Vercel và Cloudflare R2.
+A personal workspace for notes, memories, and small things I build.
 
-Website không phải portfolio, CV online hay blog truyền thống. Nó được tổ chức như một căn phòng riêng trên internet với 4 khu vực chính:
+This is not a traditional portfolio, CV page, or blog template. The public navigation is intentionally compact:
 
-- `/` - Room: không gian tổng quan.
-- `/resources` - Rương đồ: tài nguyên, liên kết, template, checklist, snippet.
-- `/bookshelf` - Giá sách: bài viết, ghi chép dài hơn, hành trình học công nghệ.
-- `/tools` - Công cụ: các tiện ích nhỏ và tool cá nhân.
-- `/about` - Giới thiệu ngắn về căn phòng và chủ nhân.
+- `/` - Workspace: overview board.
+- `/about` - Me: identity, current status, stack, links.
+- `/bookshelf` - Post: longer notes powered by static fallback data or Cloudflare R2.
+- `/resources` - Memory: saved links, files, snippets, and checklists.
+- `/tools` - Drawer: small tools, experiments, and utilities.
 
-Các route cũ như `/blog`, `/notes`, `/lab`, `/ideas`, `/links`, `/timeline`, `/projects` vẫn còn để không phá dữ liệu/build cũ, nhưng không còn là trọng tâm navigation chính.
+Legacy routes such as `/desk`, `/blog`, `/notes`, `/lab`, `/ideas`, `/links`, `/timeline`, and `/projects` are kept to avoid breaking old links/builds, but they are not the main navigation.
 
 ## Stack
 
@@ -18,19 +18,18 @@ Các route cũ như `/blog`, `/notes`, `/lab`, `/ideas`, `/links`, `/timeline`, 
 - TypeScript
 - Tailwind CSS
 - Vercel
-- Cloudflare R2 cho assets public
-- Canvas 2D cho room scene
+- Cloudflare R2 for public assets and Post content
 
-## Chạy Local
+## Local
 
 ```bash
 npm install
 npm run dev
 ```
 
-Mở `http://localhost:3000`.
+Open `http://localhost:3000`.
 
-## Build
+## Checks
 
 ```bash
 npm run typecheck
@@ -38,18 +37,16 @@ npm run lint
 npm run build
 ```
 
-## Cấu Trúc Dữ Liệu
+## Data
 
-- `lib/room.ts`: 4 zone chính trong căn phòng.
-- `lib/resources.ts`: dữ liệu Rương đồ.
-- `lib/bookshelf.ts`: dữ liệu Giá sách và bài viết.
-- `lib/tools.ts`: dữ liệu Công cụ cá nhân.
-- `lib/assets.ts`: registry asset R2.
-- `lib/r2.ts`: helper tạo URL public từ Cloudflare R2.
+- `lib/room.ts`: Workspace zones shown on the homepage.
+- `lib/bookshelf.ts`: fallback Post data.
+- `lib/resources.ts`: Memory items.
+- `lib/tools.ts`: Drawer tools.
+- `lib/assets.ts`: R2 asset registry.
+- `lib/r2.ts`: public R2 URL helper.
 
-## Thêm Tài Nguyên
-
-Thêm item mới vào `lib/resources.ts`:
+## Add A Memory Item
 
 ```ts
 {
@@ -64,9 +61,9 @@ Thêm item mới vào `lib/resources.ts`:
 }
 ```
 
-## Thêm Bài Viết
+## Add A Post Fallback
 
-Thêm bài mới vào `lib/bookshelf.ts`. Route chi tiết sẽ là `/bookshelf/[slug]`.
+Add a post to `lib/bookshelf.ts`. Public detail route remains `/bookshelf/[slug]`.
 
 ```ts
 {
@@ -74,18 +71,16 @@ Thêm bài mới vào `lib/bookshelf.ts`. Route chi tiết sẽ là `/bookshelf/
   slug: "post-title",
   description: "Short summary",
   date: "2026-07-10",
-  topic: "Personal Digital Room",
-  tags: ["Room"],
-  readingTime: "4 phút đọc",
+  topic: "Workspace",
+  tags: ["Notes"],
+  readingTime: "4 min read",
   published: true,
   featured: true,
   content: "Sample content..."
 }
 ```
 
-## Thêm Công Cụ
-
-Thêm tool mới vào `lib/tools.ts`:
+## Add A Drawer Tool
 
 ```ts
 {
@@ -100,9 +95,9 @@ Thêm tool mới vào `lib/tools.ts`:
 }
 ```
 
-## Cloudflare R2 Assets
+## Cloudflare R2
 
-Tạo `.env.local` từ `.env.example`:
+Create `.env.local` from `.env.example`:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
@@ -111,15 +106,16 @@ R2_ACCOUNT_ID=
 R2_ACCESS_KEY_ID=
 R2_SECRET_ACCESS_KEY=
 R2_BUCKET_NAME=
+ADMIN_SECRET=
 ```
 
-`NEXT_PUBLIC_R2_PUBLIC_URL` là public. Các biến `R2_*` còn lại là server-only, chưa dùng ở client và không được expose qua API public.
+`NEXT_PUBLIC_R2_PUBLIC_URL` is public. `R2_*` and `ADMIN_SECRET` are server-only and must not be exposed to client components or public APIs.
 
-Không commit `.env.local`.
+Do not commit `.env.local`.
 
-## R2-powered Bookshelf
+## R2-powered Post Admin
 
-Ke sach co the doc va quan ly bai viet truc tiep tren Cloudflare R2.
+The admin UI is still at `/admin/bookshelf` to avoid breaking existing logic.
 
 Object layout:
 
@@ -133,38 +129,19 @@ uploads/images/[yyyy]/[mm]/[filename]
 uploads/files/[yyyy]/[mm]/[filename]
 ```
 
-`bookshelf/index.json` la danh sach metadata. Moi bai co metadata rieng va file `index.mdx`.
+Admin flow:
 
-Admin:
-
-- Vao `/admin/bookshelf`.
-- Nhap `ADMIN_SECRET`.
-- Tao, sua, xoa, publish/unpublish bai.
-- Upload cover va chen anh/file vao noi dung qua presigned PUT URL.
-- Anh/file chen trong bai se duoc luu vao `bookshelf/posts/[slug]/attachments/` khi bai co slug.
-- Khong dua R2 secret ra client; admin API luon can `ADMIN_SECRET`.
-
-Env can co tren local/Vercel:
-
-```bash
-NEXT_PUBLIC_R2_PUBLIC_URL=
-R2_ACCOUNT_ID=
-R2_ACCESS_KEY_ID=
-R2_SECRET_ACCESS_KEY=
-R2_BUCKET_NAME=
-ADMIN_SECRET=
-```
-
-Public routes:
-
-- `/bookshelf` doc `bookshelf/index.json` va chi hien thi `published=true`.
-- `/bookshelf/[slug]` doc `metadata.json` va `index.mdx` cua slug.
-- Neu R2 chua san sang hoac env thieu, app dung fallback an toan thay vi crash trang man hinh.
+- Open `/admin/bookshelf`.
+- Enter `ADMIN_SECRET`.
+- Create, edit, delete, publish, or unpublish posts.
+- Upload covers and inline files through presigned PUT URLs.
+- Public `/bookshelf` only shows `published=true`.
+- If R2 is not ready or env is missing, the app falls back safely instead of crashing.
 
 ## Deploy Vercel
 
-1. Push code lên GitHub.
-2. Import project trong Vercel.
-3. Thêm `NEXT_PUBLIC_SITE_URL` và `NEXT_PUBLIC_R2_PUBLIC_URL`.
+1. Push code to GitHub.
+2. Import the project in Vercel.
+3. Set `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_R2_PUBLIC_URL`, and server-only R2/admin env vars.
 4. Build command: `npm run build`.
-5. Redeploy khi đổi domain R2 để `next/image` nhận đúng hostname.
+5. Redeploy after changing the R2 public domain so `next/image` receives the correct hostname.

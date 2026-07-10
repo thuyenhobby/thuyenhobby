@@ -1,50 +1,53 @@
-import { RoomScene } from "@/components/room/room-scene";
-import { RoomZoneGrid } from "@/components/room/room-zone-grid";
+import { ActivityStrip } from "@/components/workspace/activity-strip";
+import { WorkspaceBoard } from "@/components/workspace/workspace-board";
+import { PageHeading } from "@/components/ui/page-heading";
 import { PageShell } from "@/components/ui/page-shell";
-import { Tag } from "@/components/ui/tag";
+import { StatPill } from "@/components/ui/stat-pill";
+import { getBookshelfPostsForPublicPage } from "@/lib/bookshelf-r2";
 import { createPageMetadata } from "@/lib/metadata";
+import { resources } from "@/lib/resources";
 import { roomZones } from "@/lib/room";
+import { tools } from "@/lib/tools";
 
 export const metadata = createPageMetadata({
-  title: "Thuyên Hobby",
-  description: "Không gian số để lưu tài nguyên, chia sẻ ghi chép và xây công cụ nhỏ.",
+  title: "anx.thnw",
+  description: "A personal workspace for notes, memories, and small things I build.",
   path: "/",
 });
 
-const currentHighlights = [
-  "Đang sắp xếp tài nguyên học web.",
-  "Đang viết lại ghi chép ngắn.",
-  "Đang thử vài utility nhỏ.",
-];
+function newestByDate<T extends { addedAt?: string; date?: string }>(items: T[]) {
+  return [...items].sort((a, b) => Number(new Date(b.addedAt ?? b.date ?? 0)) - Number(new Date(a.addedAt ?? a.date ?? 0)))[0];
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  const posts = await getBookshelfPostsForPublicPage();
+  const latestPost = newestByDate(posts);
+  const latestResource = newestByDate(resources);
+  const latestTool = newestByDate(tools);
+
+  const activity = [
+    { label: "status", value: "quietly building" },
+    { label: "latest post", value: latestPost?.title ?? "nothing here yet." },
+    { label: "memory", value: latestResource?.title ?? "brain cache is clean for now." },
+    { label: "drawer", value: latestTool?.name ?? "still cooking." },
+  ];
+
   return (
-    <PageShell>
-      <p className="mb-5 font-mono text-sm font-bold uppercase tracking-[0.22em] text-cyan-700 dark:text-cyan-300">
-        Thuyên Hobby - một căn phòng nhỏ cho tài nguyên, ghi chép và công cụ.
-      </p>
+    <PageShell variant="wide">
+      <PageHeading
+        eyebrow="Workspace"
+        title="anx.thnw"
+        description="notes, memories, tools — quietly building."
+        size="sm"
+        compact
+        stats={<StatPill label="zones" value={roomZones.length} tone="cyan" />}
+      />
 
-      <RoomScene zones={roomZones} />
+      <WorkspaceBoard zones={roomZones} />
 
-      <section className="mt-8" aria-labelledby="quick-access-title">
-        <h2 id="quick-access-title" className="mb-4 text-lg font-semibold tracking-tight">
-          Mở nhanh
-        </h2>
-        <RoomZoneGrid zones={roomZones} />
-      </section>
-
-      <section className="mt-8" aria-label="Hiện tại">
-        <div className="rounded-3xl border border-border bg-background p-4 shadow-soft">
-          <div className="grid gap-3 text-sm md:grid-cols-3">
-            {currentHighlights.map((item) => (
-              <div key={item} className="flex items-center gap-3 rounded-2xl bg-foreground/[0.03] px-4 py-3">
-                <Tag className="bg-cyan-500/10 text-cyan-700 dark:text-cyan-300">Hiện tại</Tag>
-                <span className="text-muted">{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <div className="mt-3 md:mt-4">
+        <ActivityStrip items={activity} />
+      </div>
     </PageShell>
   );
 }
