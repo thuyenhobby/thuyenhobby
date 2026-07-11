@@ -30,7 +30,7 @@ function FeaturedVisual({ post }: { post: BookshelfPostMetadata }) {
 export function FeaturedBook({ post, pinnedPosts = [] }: FeaturedBookProps) {
   return (
     <section className="grid gap-3 lg:grid-cols-[1.4fr_0.6fr]">
-      <Link href={`/bookshelf/${post.slug}`} className="focus-ring group block rounded-[1.5rem]">
+      <Link href={`/post/${post.slug}`} className="focus-ring group block rounded-[1.5rem]">
         <article className="relative overflow-hidden rounded-[1.5rem] border border-violet-500/20 bg-white/78 p-3 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-violet-500/45 dark:bg-slate-950/58 md:p-4">
           <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/55 to-transparent" />
           <div className="grid gap-3 md:grid-cols-[1fr_13rem] md:items-stretch">
@@ -66,7 +66,7 @@ export function FeaturedBook({ post, pinnedPosts = [] }: FeaturedBookProps) {
             {pinnedPosts.slice(0, 3).map((pinnedPost) => (
               <Link
                 key={pinnedPost.id}
-                href={`/bookshelf/${pinnedPost.slug}`}
+                href={`/post/${pinnedPost.slug}`}
                 className="focus-ring group flex items-center gap-3 rounded-2xl border border-violet-500/12 bg-background px-3 py-2.5 transition hover:translate-x-1 hover:border-violet-500/40"
               >
                 <span className="size-2.5 rounded-full bg-violet-500/65" aria-hidden="true" />

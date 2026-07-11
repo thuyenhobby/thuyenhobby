@@ -3,10 +3,10 @@ import { siteConfig } from "@/lib/site";
 
 const workspaceLinks = [
   { href: "/", label: "Workspace" },
-  { href: "/about", label: "Me" },
-  { href: "/bookshelf", label: "Post" },
-  { href: "/resources", label: "Memory" },
-  { href: "/tools", label: "Drawer" },
+  { href: "/me", label: "Me" },
+  { href: "/post", label: "Post" },
+  { href: "/memory", label: "Memory" },
+  { href: "/drawer", label: "Drawer" },
 ];
 
 export function Footer() {

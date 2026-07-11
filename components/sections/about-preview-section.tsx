@@ -17,7 +17,7 @@ export function AboutPreviewSection() {
             người dùng, hiệu năng và cách tổ chức code dễ mở rộng. Tôi xem mỗi dự án như một hệ
             thống nhỏ cần rõ ràng từ giao diện, nội dung đến quy trình deploy.
           </p>
-          <ButtonLink href="/about" variant="ghost" className="mt-5 px-0">
+          <ButtonLink href="/me" variant="ghost" className="mt-5 px-0">
             Open Me
           </ButtonLink>
         </div>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AdminMdxEditor } from "@/components/admin/mdx-editor";
+import type { MDXEditorMethods } from "@mdxeditor/editor";
 import type { BookshelfPost, BookshelfPostInput, BookshelfPostMetadata } from "@/types/bookshelf";
 
 const emptyInput: BookshelfPostInput = {
@@ -15,8 +17,10 @@ const emptyInput: BookshelfPostInput = {
   featured: false,
 };
 
-type PresignedUpload = {
-  uploadUrl: string;
+const adminSecretStorageKey = "post-admin-secret";
+const legacyAdminSecretStorageKey = "bookshelf-admin-secret";
+
+type UploadedAsset = {
   key: string;
   publicUrl: string;
 };
@@ -65,13 +69,14 @@ export function AdminBookshelfClient() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const contentRef = useRef<HTMLTextAreaElement | null>(null);
+  const [editorKey, setEditorKey] = useState(0);
+  const editorRef = useRef<MDXEditorMethods | null>(null);
 
   const selectedPost = useMemo(() => posts.find((post) => post.slug === selectedSlug), [posts, selectedSlug]);
-  const publicPostHref = selectedSlug && form.published ? `/bookshelf/${form.slug || selectedSlug}` : null;
+  const publicPostHref = selectedSlug && form.published ? `/post/${form.slug || selectedSlug}` : null;
 
   useEffect(() => {
-    const storedSecret = localStorage.getItem("bookshelf-admin-secret");
+    const storedSecret = localStorage.getItem(adminSecretStorageKey) ?? localStorage.getItem(legacyAdminSecretStorageKey);
     if (storedSecret) {
       setSecret(storedSecret);
     }
@@ -104,7 +109,7 @@ export function AdminBookshelfClient() {
     setMessage("");
 
     try {
-      localStorage.setItem("bookshelf-admin-secret", secret);
+      localStorage.setItem(adminSecretStorageKey, secret);
       const data = await api<{ posts: BookshelfPostMetadata[] }>("/api/admin/bookshelf");
       setPosts(data.posts);
       setMessage(`Đã tải ${data.posts.length} bài.`);
@@ -133,6 +138,7 @@ export function AdminBookshelfClient() {
         published: data.post.published,
         featured: Boolean(data.post.featured),
       });
+      setEditorKey((current) => current + 1);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không mở được bài.");
     } finally {
@@ -144,6 +150,7 @@ export function AdminBookshelfClient() {
     setSelectedSlug(null);
     setForm(emptyInput);
     setMessage("");
+    setEditorKey((current) => current + 1);
   }
 
   async function savePost() {
@@ -153,6 +160,7 @@ export function AdminBookshelfClient() {
     try {
       const payload = {
         ...form,
+        content: editorRef.current?.getMarkdown() ?? form.content,
         slug: form.slug || slugify(form.title),
         tags: form.tags,
       };
@@ -176,7 +184,7 @@ export function AdminBookshelfClient() {
         featured: Boolean(data.post.featured),
       });
       await loadPosts();
-      setMessage(data.post.published ? "Đã lưu và bài sẽ hiển thị ở /bookshelf." : "Đã lưu draft. Draft chưa hiển thị ở /bookshelf.");
+      setMessage(data.post.published ? "Đã lưu và bài sẽ hiển thị ở /post." : "Đã lưu draft. Draft chưa hiển thị ở /post.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không lưu được bài.");
     } finally {
@@ -200,7 +208,7 @@ export function AdminBookshelfClient() {
 
       setForm((current) => ({ ...current, published: data.post.published }));
       await loadPosts();
-      setMessage(nextPublished ? "Đã publish bài. Bài sẽ hiển thị ở /bookshelf." : "Đã chuyển về draft. Draft chưa hiển thị ở /bookshelf.");
+      setMessage(nextPublished ? "Đã publish bài. Bài sẽ hiển thị ở /post." : "Đã chuyển về draft. Draft chưa hiển thị ở /post.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không đổi trạng thái bài.");
     } finally {
@@ -229,34 +237,35 @@ export function AdminBookshelfClient() {
   }
 
   async function uploadAsset(file: File, options?: UploadAssetOptions) {
-    const presign = await api<PresignedUpload>("/api/admin/uploads/presign", {
-      method: "POST",
-      body: JSON.stringify({
-        filename: file.name,
-        contentType: file.type,
-        size: file.size,
-        scope: options?.scope,
-        slug: options?.slug,
-      }),
-    });
-    const upload = await fetch(presign.uploadUrl, {
-      method: "PUT",
-      body: file,
-      headers: {
-        "content-type": file.type,
-      },
-    });
-
-    if (!upload.ok) {
-      throw new Error("Upload lên R2 thất bại.");
+    if (!secret) {
+      throw new Error("Nhập ADMIN_SECRET trước khi upload.");
     }
 
-    await api("/api/admin/uploads/complete", {
-      method: "POST",
-      body: JSON.stringify({ key: presign.key }),
-    });
+    const formData = new FormData();
+    formData.append("file", file);
 
-    return presign;
+    if (options?.scope) {
+      formData.append("scope", options.scope);
+    }
+
+    if (options?.slug) {
+      formData.append("slug", options.slug);
+    }
+
+    const response = await fetch("/api/admin/uploads", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${secret}`,
+      },
+      body: formData,
+    });
+    const data = (await response.json()) as UploadedAsset & { error?: string };
+
+    if (!response.ok) {
+      throw new Error(data.error || "Upload lên R2 thất bại.");
+    }
+
+    return data;
   }
 
   async function uploadCover(file: File) {
@@ -281,7 +290,7 @@ export function AdminBookshelfClient() {
     try {
       const attachmentSlug = selectedSlug ?? slugify(form.slug || form.title);
       const upload = await uploadAsset(file, attachmentSlug ? { scope: "bookshelf-post", slug: attachmentSlug } : undefined);
-      const snippet = markdownForUpload(file, upload.key);
+      const snippet = markdownForUpload(file, upload.publicUrl || upload.key);
       insertIntoContent(snippet);
       setMessage("Đã upload và chèn vào nội dung.");
     } catch (error) {
@@ -292,30 +301,43 @@ export function AdminBookshelfClient() {
   }
 
   function insertIntoContent(snippet: string) {
-    const textarea = contentRef.current;
+    const editor = editorRef.current;
 
-    setForm((current) => {
-      if (!textarea) {
-        const nextContent = current.content ? `${current.content}\n\n${snippet}` : snippet;
-        return { ...current, content: nextContent };
-      }
-
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const before = current.content.slice(0, start);
-      const after = current.content.slice(end);
-      const needsBeforeBreak = before && !before.endsWith("\n") ? "\n\n" : "";
-      const needsAfterBreak = after && !after.startsWith("\n") ? "\n\n" : "";
-      const nextContent = `${before}${needsBeforeBreak}${snippet}${needsAfterBreak}${after}`;
+    if (editor) {
+      editor.focus(() => {
+        editor.insertMarkdown(snippet);
+      }, { defaultSelection: "rootEnd" });
 
       requestAnimationFrame(() => {
-        textarea.focus();
-        const cursor = before.length + needsBeforeBreak.length + snippet.length;
-        textarea.setSelectionRange(cursor, cursor);
+        const nextMarkdown = editor.getMarkdown();
+        setForm((current) => ({ ...current, content: nextMarkdown }));
       });
 
+      return;
+    }
+
+    setForm((current) => {
+      const nextContent = current.content ? `${current.content}\n\n${snippet}` : snippet;
       return { ...current, content: nextContent };
     });
+  }
+
+  async function uploadEditorImage(file: File) {
+    setIsUploading(true);
+    setMessage("");
+
+    try {
+      const attachmentSlug = selectedSlug ?? slugify(form.slug || form.title || "draft");
+      const upload = await uploadAsset(file, attachmentSlug ? { scope: "bookshelf-post", slug: attachmentSlug } : undefined);
+      setMessage("Đã upload ảnh vào nội dung.");
+      return upload.publicUrl || upload.key;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Không upload được ảnh.";
+      setMessage(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   function updateField<Key extends keyof BookshelfPostInput>(key: Key, value: BookshelfPostInput[Key]) {
@@ -463,21 +485,27 @@ export function AdminBookshelfClient() {
         </div>
         {!form.published ? (
           <p className="mt-4 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-800 dark:text-amber-200">
-            Bài đang là draft nên chưa xuất hiện ở trang /bookshelf. Bấm Publish hoặc bật published rồi Save.
+            Bài đang là draft nên chưa xuất hiện ở trang /post. Bấm Publish hoặc bật published rồi Save.
           </p>
         ) : null}
 
-        <label className="mt-5 block text-sm font-semibold">
-          Markdown / MDX-like content
-          <textarea
-            ref={contentRef}
-            value={form.content}
-            onChange={(event) => updateField("content", event.target.value)}
-            rows={18}
-            className="mt-2 w-full rounded-2xl border border-border bg-background p-4 font-mono text-sm leading-7 outline-none focus:border-accent"
-            placeholder="# Nội dung bài viết"
+        <div className="mt-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-sm font-semibold">
+              Nội dung bài viết
+            </span>
+            <span className="text-xs font-semibold text-muted">{isUploading ? "Đang upload..." : "Rich text / Markdown source"}</span>
+          </div>
+          <AdminMdxEditor
+            key={editorKey}
+            ref={editorRef}
+            markdown={form.content}
+            onChange={(markdown) => updateField("content", markdown)}
+            onError={({ error }) => setMessage(error)}
+            imageUploadHandler={uploadEditorImage}
+            placeholder="Viết nội dung bài viết..."
           />
-        </label>
+        </div>
       </section>
     </main>
   );

@@ -11,7 +11,7 @@ export function AuthorNoteSection() {
           Tôi xây blog này để ghi lại quá trình học, thực hành và chia sẻ kinh nghiệm làm web. Nội
           dung tập trung vào lập trình web, công cụ, deployment và hành trình tự xây sản phẩm cá nhân.
         </p>
-        <ButtonLink href="/about" variant="ghost" className="mt-5 px-0">
+        <ButtonLink href="/me" variant="ghost" className="mt-5 px-0">
           Đọc thêm về blog
         </ButtonLink>
       </div>

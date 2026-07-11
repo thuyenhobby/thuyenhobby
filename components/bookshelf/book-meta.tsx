@@ -1,13 +1,15 @@
 import type { BookshelfPostMetadata } from "@/types/bookshelf";
+import { cn } from "@/lib/utils";
 
 type BookMetaProps = {
   post: Pick<BookshelfPostMetadata, "date" | "readingTime" | "updatedAt">;
   showUpdated?: boolean;
+  className?: string;
 };
 
-export function BookMeta({ post, showUpdated = false }: BookMetaProps) {
+export function BookMeta({ post, showUpdated = false, className }: BookMetaProps) {
   return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-muted">
+    <div className={cn("flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-muted", className)}>
       <time dateTime={post.date}>{post.date}</time>
       {post.readingTime ? (
         <>

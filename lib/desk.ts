@@ -37,6 +37,6 @@ export const deskTimeline = [
 export const deskLinks = [
   { label: "GitHub", href: "https://github.com/" },
   { label: "Email", href: "mailto:hello@example.com" },
-  { label: "Post", href: "/bookshelf" },
-  { label: "Drawer", href: "/tools" },
+  { label: "Post", href: "/post" },
+  { label: "Drawer", href: "/drawer" },
 ];

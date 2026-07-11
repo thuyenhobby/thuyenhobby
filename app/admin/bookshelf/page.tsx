@@ -1,9 +1,9 @@
-import { AdminBookshelfClient } from "@/components/admin/admin-bookshelf-client";
+import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Post Admin",
+  title: "Post Admin Redirect",
 };
 
 export default function AdminBookshelfPage() {
-  return <AdminBookshelfClient />;
+  redirect("/admin/post");
 }

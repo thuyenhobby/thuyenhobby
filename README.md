@@ -5,12 +5,12 @@ A personal workspace for notes, memories, and small things I build.
 This is not a traditional portfolio, CV page, or blog template. The public navigation is intentionally compact:
 
 - `/` - Workspace: overview board.
-- `/about` - Me: identity, current status, stack, links.
-- `/bookshelf` - Post: longer notes powered by static fallback data or Cloudflare R2.
-- `/resources` - Memory: saved links, files, snippets, and checklists.
-- `/tools` - Drawer: small tools, experiments, and utilities.
+- `/me` - Me: identity, current status, stack, links.
+- `/post` - Post: longer notes powered by static fallback data or Cloudflare R2.
+- `/memory` - Memory: saved links, files, snippets, and checklists.
+- `/drawer` - Drawer: small tools, experiments, and utilities.
 
-Legacy routes such as `/desk`, `/blog`, `/notes`, `/lab`, `/ideas`, `/links`, `/timeline`, and `/projects` are kept to avoid breaking old links/builds, but they are not the main navigation.
+Legacy routes such as `/about`, `/desk`, `/bookshelf`, `/resources`, `/tools`, `/blog`, `/notes`, `/lab`, `/ideas`, `/links`, `/timeline`, and `/projects` are kept to avoid breaking old links/builds, but they are not the main navigation.
 
 ## Stack
 
@@ -63,7 +63,7 @@ npm run build
 
 ## Add A Post Fallback
 
-Add a post to `lib/bookshelf.ts`. Public detail route remains `/bookshelf/[slug]`.
+Add a post to `lib/bookshelf.ts`. Public detail route is `/post/[slug]`.
 
 ```ts
 {
@@ -115,7 +115,7 @@ Do not commit `.env.local`.
 
 ## R2-powered Post Admin
 
-The admin UI is still at `/admin/bookshelf` to avoid breaking existing logic.
+The admin UI is at `/admin/post`. The legacy `/admin/bookshelf` route redirects there, while the internal API and R2 object keys keep the existing `bookshelf` naming to avoid data migration.
 
 Object layout:
 
@@ -131,11 +131,12 @@ uploads/files/[yyyy]/[mm]/[filename]
 
 Admin flow:
 
-- Open `/admin/bookshelf`.
+- Open `/admin/post`.
 - Enter `ADMIN_SECRET`.
 - Create, edit, delete, publish, or unpublish posts.
-- Upload covers and inline files through presigned PUT URLs.
-- Public `/bookshelf` only shows `published=true`.
+- Write with MDXEditor rich text/source mode.
+- Upload covers and inline files through the protected admin upload API.
+- Public `/post` only shows `published=true`.
 - If R2 is not ready or env is missing, the app falls back safely instead of crashing.
 
 ## Deploy Vercel

@@ -57,9 +57,9 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     const input = parseInput(await request.json());
     const post = await updateBookshelfPost(slug, input);
 
-    revalidatePath("/bookshelf");
-    revalidatePath(`/bookshelf/${slug}`);
-    revalidatePath(`/bookshelf/${post.slug}`);
+    revalidatePath("/post");
+    revalidatePath(`/post/${slug}`);
+    revalidatePath(`/post/${post.slug}`);
 
     return Response.json({ post });
   } catch (error) {
@@ -82,8 +82,8 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const post = action === "publish" ? await publishBookshelfPost(slug) : await unpublishBookshelfPost(slug);
 
-    revalidatePath("/bookshelf");
-    revalidatePath(`/bookshelf/${slug}`);
+    revalidatePath("/post");
+    revalidatePath(`/post/${slug}`);
 
     return Response.json({ post });
   } catch (error) {
@@ -99,8 +99,8 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     const { slug } = await context.params;
     await deleteBookshelfPost(slug);
 
-    revalidatePath("/bookshelf");
-    revalidatePath(`/bookshelf/${slug}`);
+    revalidatePath("/post");
+    revalidatePath(`/post/${slug}`);
 
     return Response.json({ ok: true });
   } catch (error) {

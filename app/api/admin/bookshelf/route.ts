@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
     const input = parseInput(await request.json());
     const post = await createBookshelfPost(input);
 
-    revalidatePath("/bookshelf");
-    revalidatePath(`/bookshelf/${post.slug}`);
+    revalidatePath("/post");
+    revalidatePath(`/post/${post.slug}`);
 
     return Response.json({ post }, { status: 201 });
   } catch (error) {

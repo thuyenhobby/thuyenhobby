@@ -35,6 +35,67 @@ body {
   .focus-ring {
     @apply outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-accent;
   }
+
+  .admin-mdx-editor {
+    @apply mt-2 overflow-hidden rounded-2xl border border-border bg-background text-foreground shadow-sm;
+  }
+
+  .admin-mdx-toolbar {
+    @apply flex-wrap border-b border-border bg-foreground/[0.03] px-2 py-2;
+  }
+
+  .admin-mdx-content {
+    @apply min-h-[28rem] px-4 py-4 text-sm leading-7 outline-none md:px-5 md:py-5;
+  }
+
+  .admin-mdx-content h1 {
+    @apply mb-3 text-2xl font-semibold tracking-tight;
+  }
+
+  .admin-mdx-content h2 {
+    @apply mb-3 mt-6 text-xl font-semibold tracking-tight;
+  }
+
+  .admin-mdx-content h3 {
+    @apply mb-2 mt-5 text-lg font-semibold tracking-tight;
+  }
+
+  .admin-mdx-content p {
+    @apply my-3 text-muted;
+  }
+
+  .admin-mdx-content a {
+    @apply font-semibold text-accent underline-offset-4 hover:underline;
+  }
+
+  .admin-mdx-content ul,
+  .admin-mdx-content ol {
+    @apply my-3 space-y-1 pl-6 text-muted;
+  }
+
+  .admin-mdx-content ul {
+    @apply list-disc;
+  }
+
+  .admin-mdx-content ol {
+    @apply list-decimal;
+  }
+
+  .admin-mdx-content blockquote {
+    @apply my-4 border-l-4 border-accent/40 bg-foreground/[0.04] px-4 py-2 text-muted;
+  }
+
+  .admin-mdx-content code {
+    @apply rounded-md bg-foreground/[0.08] px-1.5 py-0.5 font-mono text-sm text-foreground;
+  }
+
+  .admin-mdx-content pre {
+    @apply my-4 overflow-x-auto rounded-xl border border-border bg-slate-950 p-3 text-sm leading-7 text-slate-100;
+  }
+
+  .admin-mdx-content img {
+    @apply my-4 max-h-[34rem] rounded-2xl border border-border object-cover;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

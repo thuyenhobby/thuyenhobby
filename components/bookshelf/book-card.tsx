@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { BookMeta } from "@/components/bookshelf/book-meta";
 import { TopicBadge } from "@/components/bookshelf/topic-badge";
 import type { BookshelfPostMetadata } from "@/types/bookshelf";
 
@@ -7,45 +7,60 @@ type BookCardProps = {
   post: BookshelfPostMetadata;
 };
 
-export function BookCard({ post }: BookCardProps) {
+function formatPostDate(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
+function CoverImage({ post }: Pick<BookCardProps, "post">) {
   return (
-    <li>
+    <span className="relative block aspect-[16/9] overflow-hidden rounded-2xl bg-violet-500/[0.06] dark:bg-violet-500/[0.08]" aria-hidden="true">
+      {post.coverImage ? (
+        <Image src={post.coverImage} alt="" fill sizes="(min-width: 1280px) 380px, (min-width: 640px) 50vw, 100vw" className="object-cover transition duration-300 group-hover:scale-105" />
+      ) : (
+        <>
+          <span className="absolute left-5 top-5 h-2 w-20 rounded-full bg-violet-500/30" />
+          <span className="absolute left-5 top-10 h-2 w-32 rounded-full bg-cyan-500/20" />
+          <span className="absolute bottom-5 right-5 font-mono text-xs font-black uppercase tracking-[0.18em] text-violet-500/45">post</span>
+        </>
+      )}
+    </span>
+  );
+}
+
+export function BookCard({ post }: BookCardProps) {
+  const displayDate = formatPostDate(post.date);
+
+  return (
+    <li className="min-w-0">
       <Link
-        href={`/bookshelf/${post.slug}`}
-        className="focus-ring group grid gap-3 px-3 py-3 transition duration-200 hover:bg-violet-500/[0.04] sm:grid-cols-[7.5rem_1fr_auto] sm:items-center md:px-4 md:py-4"
+        href={`/post/${post.slug}`}
+        className="focus-ring group block h-full rounded-[1.35rem] border border-violet-500/15 bg-background p-2.5 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-500/35 hover:shadow-md dark:bg-slate-950/45"
         aria-label={`Open post ${post.title}`}
       >
-        <div className="flex items-center gap-2 sm:block">
-          <span className="inline-flex size-2.5 rounded-full bg-violet-500/70 shadow-[0_0_18px_rgba(139,92,246,0.35)] sm:mb-2" aria-hidden="true" />
-          <BookMeta post={post} />
-        </div>
+        <CoverImage post={post} />
 
-        <article className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
+        <article className="px-1.5 pb-1 pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <TopicBadge topic={post.topic} className="px-2 py-0.5" />
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">log entry</span>
+            <time dateTime={post.date} className="text-xs font-semibold text-muted">
+              {displayDate}
+            </time>
           </div>
-          <h3 className="mt-2 line-clamp-2 text-base font-semibold leading-6 tracking-tight transition group-hover:text-violet-700 dark:group-hover:text-violet-300 md:text-lg">
+
+          <h3 className="mt-3 line-clamp-2 text-lg font-semibold leading-6 tracking-tight transition group-hover:text-violet-700 dark:group-hover:text-violet-300">
             {post.title}
           </h3>
-          <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{post.description}</p>
-          {post.tags.length > 0 ? (
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {post.tags.slice(0, 3).map((tag) => (
-                <span key={tag} className="rounded-md bg-foreground/[0.04] px-2 py-1 text-[11px] font-semibold text-muted ring-1 ring-border/70">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          ) : null}
         </article>
-
-        <span className="inline-flex items-center justify-between gap-2 text-xs font-bold text-violet-700 dark:text-violet-300 sm:justify-end">
-          read
-          <span className="transition group-hover:translate-x-0.5" aria-hidden="true">
-            →
-          </span>
-        </span>
       </Link>
     </li>
   );

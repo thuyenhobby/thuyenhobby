@@ -47,7 +47,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="focus-ring inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition hover:border-accent hover:bg-foreground/[0.04] hover:text-accent"
+      className="focus-ring inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition hover:border-accent hover:bg-foreground/[0.04] hover:text-accent"
       aria-label={theme === "dark" ? "Chuyển sang light mode" : "Chuyển sang dark mode"}
       title="Đổi giao diện"
     >

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { siteConfig } from "@/lib/site";
+import "@mdxeditor/editor/style.css";
 import "./globals.css";
 
 const inter = Inter({
